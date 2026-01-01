@@ -255,7 +255,7 @@
             background: #1a1a2e;
             padding: 25px;
             border-radius: 20px;
-            max-width: 800px;
+            max-width: 900px;
             width: 95%;
             max-height: 85vh;
             overflow-y: auto;
@@ -266,7 +266,7 @@
             width: 100%;
             border-collapse: collapse;
             margin: 10px 0;
-            font-size: 14px;
+            font-size: 13px;
         }
         .help-table th, .help-table td {
             border: 1px solid #333;
@@ -436,19 +436,20 @@
             <h2 style="text-align: center; color: var(--text-color);">《一元一次俄羅斯》操作說明</h2>
             
             <table class="help-table">
-                <tr><th>功能</th><th>玩家 A (鍵盤)</th><th>玩家 B (鍵盤)</th><th>平板 (觸控鈕)</th></tr>
-                <tr><td>左右移動</td><td>A / D</td><td>左 / 右 方向鍵</td><td>左右箭頭鈕</td></tr>
-                <tr><td>加速下落</td><td>S</td><td>下 方向鍵</td><td>向下箭頭鈕</td></tr>
-                <tr><td>旋轉方塊</td><td>W</td><td>上 方向鍵</td><td>旋轉鈕</td></tr>
-                <tr><td>確認答案</td><td>Q</td><td>Enter</td><td>確認鈕 (解題時出現)</td></tr>
+                <tr><th>功能</th><th>玩家 A (鍵盤)</th><th>玩家 B (鍵盤)</th><th>PS/2 搖桿</th><th>平板 (觸控鈕)</th></tr>
+                <tr><td>左右移動</td><td>A / D</td><td>← / →</td><td>左搖桿 / 十字鍵</td><td>左右箭頭鈕</td></tr>
+                <tr><td>加速下落</td><td>S</td><td>↓</td><td>左搖桿 下</td><td>向下箭頭鈕</td></tr>
+                <tr><td>旋轉方塊</td><td>W</td><td>↑</td><td>按鈕 2 (◯ / B)</td><td>旋轉鈕</td></tr>
+                <tr><td>確認答案</td><td>Q</td><td>Enter</td><td>按鈕 1 (A / ✕)</td><td>確認鈕</td></tr>
             </table>
 
             <div style="line-height: 1.6; font-size: 14px;">
                 <h3>⚔️ 遊戲規則</h3>
                 <ul>
                     <li>消除行數即可攻擊對手，對手需解對一元一次方程式才能繼續。</li>
-                    <li>隨機出現含 "B" 的小格，消除後可獲得<strong>炸彈</strong>。</li>
-                    <li>炸彈落地立即引爆周圍 5x5 範圍。</li>
+                    <li>隨機出現含 "B" 的小格，消除後可獲得<strong>炸彈</strong>，落地後立即引爆周圍 5x5 範圍。</li>
+                    <li><strong>即時淘汰：</strong> 若受到攻擊後方塊頂到最上方即判定輸掉比賽。</li>
+                    <li><strong>係數限制：</strong> 所有題目之係數、常數與答案均保證不為 0。</li>
                 </ul>
             </div>
             <p style="text-align: center; color: #ffcc00; font-weight: bold;">請點擊右上角「開始戰鬥」啟動遊戲</p>
@@ -693,9 +694,8 @@
 
         const playerA = new Player('A', 'canvas-a', 'next-a', 'score-a', 'math-a'), playerB = new Player('B', 'canvas-b', 'next-b', 'score-b', 'math-b');
 
-        // 修復：平板觸控輸入靈敏度
         function touchInput(e, pID, action, isPressed) {
-            if (e) e.preventDefault(); // 阻止 mouse 事件重複觸發
+            if (e) e.preventDefault(); 
             const p = (pID === 'A') ? playerA : playerB;
             if (action === 'left') p.touchLeft = isPressed; if (action === 'right') p.touchRight = isPressed; if (action === 'down') p.touchDown = isPressed;
             if (action === 'up' && isPressed) { if (p.isSolving) p.selectMathOption(0, -1); else p.rotate(); }

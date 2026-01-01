@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>一元一次俄羅斯(東興ㄚ杰)</title>
     <style>
         :root {
@@ -23,13 +23,14 @@
             flex-direction: column;
             align-items: center;
             height: 100vh;
+            touch-action: manipulation;
         }
 
         /* 頂部控制列 */
         #top-bar {
             width: 100%;
             background: #0f3460;
-            padding: 5px 20px;
+            padding: 5px 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -49,7 +50,6 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            margin-left: 5px;
         }
 
         .volume-slider {
@@ -60,7 +60,7 @@
         .title-group {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
             flex-grow: 1;
             justify-content: center;
         }
@@ -74,6 +74,7 @@
             transition: 0.3s;
             font-size: 14px;
             color: white;
+            user-select: none;
         }
 
         .btn-fullscreen { background: #6c757d; }
@@ -88,55 +89,63 @@
         .btn-restart {
             background: #f39c12;
             padding: 8px 20px;
-            font-size: 14px;
             display: none; 
         }
         .btn-audio { background: #533483; min-width: 80px; }
 
-        /* 遊戲主容器 */
+        /* 遊戲主容器 - 左右兩側佈局 */
         #game-container {
             display: flex;
             width: 100%;
             flex: 1;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px;
+            justify-content: center;
+            align-items: stretch;
+            padding: 5px;
             box-sizing: border-box;
             height: calc(100vh - 50px);
+            gap: 10px;
         }
 
         .player-section {
             display: flex;
-            flex-direction: column;
+            flex-direction: row; /* 水平排列按鈕與棋盤 */
             align-items: center;
-            width: 48%;
+            justify-content: center;
+            width: 50%;
             height: 100%;
             position: relative;
+            gap: 10px;
+        }
+
+        /* 玩家 B 的排列順序相反，讓按鈕始終在最外側 */
+        #player-b {
+            flex-direction: row-reverse;
         }
 
         .board-container {
             display: flex;
-            gap: 15px;
+            gap: 5px;
             background: var(--panel-color);
             padding: 10px;
             border-radius: 10px;
             border: 2px solid #533483;
-            max-height: 95%;
+            max-height: 85%;
+            position: relative;
         }
 
         canvas {
             background: #000;
             border: 1px solid #333;
             height: auto;
-            max-height: 80vh; 
+            max-height: 65vh; 
         }
 
         .side-panel {
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            gap: 10px;
-            width: 100px;
+            gap: 8px;
+            width: 70px;
         }
 
         .info-box {
@@ -146,20 +155,59 @@
             text-align: center;
         }
 
-        .info-label { font-size: 10px; color: #ccc; margin-bottom: 2px; }
-        .info-value { font-size: 16px; font-weight: bold; color: #00d4ff; }
+        .info-label { font-size: 10px; color: #ccc; }
+        .info-value { font-size: 14px; font-weight: bold; color: #00d4ff; }
 
-        /* 方程式解題區 */
+        /* 虛擬按鍵區 - 改為垂直佈局適合平板兩側 */
+        .touch-controls {
+            display: none; 
+            flex-direction: column;
+            gap: 12px;
+            width: 80px;
+            z-index: 10;
+        }
+
+        .t-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 12px;
+            height: 65px;
+            width: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .t-btn:active {
+            background: var(--text-color);
+            transform: scale(0.92);
+        }
+
+        .t-btn.confirm {
+            height: 80px;
+            background: rgba(40, 167, 69, 0.3);
+            border-color: #28a745;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* 方程式解題區 - 置中於棋盤 */
         .math-overlay {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 85%;
+            width: 110%; /* 稍微寬過棋盤 */
             background: rgba(15, 52, 96, 0.98);
             border: 4px solid var(--text-color);
             border-radius: 15px;
-            padding: 15px;
+            padding: 10px;
             text-align: center;
             display: none; 
             z-index: 50;
@@ -168,12 +216,32 @@
 
         .math-equation {
             font-size: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: #fff;
             background: #1a1a2e;
-            padding: 10px;
+            padding: 8px;
             border-radius: 5px;
             word-break: break-all;
+        }
+
+        .math-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .option-btn {
+            padding: 10px;
+            background: #533483;
+            border: 2px solid transparent;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .option-btn.selected {
+            border-color: #00ffcc;
+            background: #e94560;
         }
 
         /* 說明視窗 Overlay */
@@ -189,20 +257,20 @@
 
         .help-content {
             background: #1a1a2e;
-            padding: 30px;
+            padding: 25px;
             border-radius: 20px;
             max-width: 800px;
-            width: 90%;
-            max-height: 80vh;
+            width: 95%;
+            max-height: 85vh;
             overflow-y: auto;
             border: 2px solid #e94560;
-            margin-top: 50px;
         }
 
         .help-table {
             width: 100%;
             border-collapse: collapse;
             margin: 10px 0;
+            font-size: 14px;
         }
         .help-table th, .help-table td {
             border: 1px solid #333;
@@ -214,14 +282,13 @@
         #flash-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 0, 0, 0.5);
+            background: rgba(255, 0, 0, 0.4);
             pointer-events: none;
             z-index: 2000;
             opacity: 0;
             transition: opacity 0.05s;
         }
 
-        /* 遊戲結束結算畫面 */
         .global-game-over {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -236,13 +303,11 @@
 
         .win-celebration { 
             color: #ffcc00; 
-            font-size: 56px; 
-            margin-top: 10px; 
+            font-size: 48px; 
             font-weight: 900;
-            text-shadow: 0 0 30px rgba(255, 204, 0, 0.8), 2px 2px 2px #000;
+            text-shadow: 0 0 30px rgba(255, 204, 0, 0.8);
             animation: winPulse 1.5s infinite;
             text-align: center;
-            z-index: 2110;
         }
 
         @keyframes winPulse {
@@ -251,7 +316,6 @@
             100% { transform: scale(1); }
         }
 
-        /* 花瓣樣式 */
         .petal {
             position: absolute;
             background-color: #ffc0cb;
@@ -265,42 +329,19 @@
             100% { top: 110%; transform: translateX(100px) rotate(360deg); }
         }
 
-        .math-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .option-btn {
-            padding: 12px;
-            background: #533483;
-            border: 2px solid transparent;
-            color: white;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        .option-btn.selected {
-            border-color: #00ffcc;
-            background: #e94560;
-        }
-
-        /* 加分特效樣式 */
         .score-pop {
             position: absolute;
             color: #00ffcc;
             font-weight: bold;
             font-size: 24px;
-            animation: fadeUp 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation: fadeUp 1.2s forwards;
             pointer-events: none;
-            text-shadow: 0 0 8px rgba(0, 255, 204, 0.8);
             z-index: 100;
         }
 
         @keyframes fadeUp {
             from { opacity: 1; transform: translate(-50%, 0); }
-            to { opacity: 0; transform: translate(-50%, -80px); }
+            to { opacity: 0; transform: translate(-50%, -60px); }
         }
     </style>
 </head>
@@ -310,17 +351,16 @@
 
     <div id="top-bar">
         <div class="audio-controls">
-            <button class="btn btn-fullscreen" onclick="toggleFullScreen()">⛶ 全螢幕切換</button>
+            <button class="btn btn-fullscreen" onclick="toggleFullScreen()">⛶ 全螢幕</button>
             <button class="btn btn-audio" id="bgm-toggle" onclick="toggleMusic()">音樂: 關</button>
             <button class="btn btn-audio" id="sfx-toggle" onclick="toggleSFX()">音效: 關</button>
             <div class="volume-control">
-                <span>🔊</span>
                 <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.1" value="0.5" oninput="updateVolume(this.value)">
             </div>
         </div>
         
         <div class="title-group">
-            <div style="font-weight: bold; font-size: 18px;">🕹️ 一元一次俄羅斯(東興ㄚ杰)</div>
+            <div style="font-weight: bold; font-size: 18px;">🕹️ 一元一次俄羅斯</div>
         </div>
 
         <div>
@@ -332,383 +372,188 @@
     <div id="game-container">
         <!-- 玩家 A (左) -->
         <div id="player-a" class="player-section">
-            <h3 style="margin: 5px; color: #00d4ff;">玩家 A</h3>
+            <!-- 觸控按鈕 A 在最左側 -->
+            <div class="touch-controls" id="touch-a">
+                <div class="t-btn" onmousedown="touchInput('A', 'up', true)" onmouseup="touchInput('A', 'up', false)" ontouchstart="touchInput('A', 'up', true)" ontouchend="touchInput('A', 'up', false)">旋轉</div>
+                <div class="t-btn" onmousedown="touchInput('A', 'left', true)" onmouseup="touchInput('A', 'left', false)" ontouchstart="touchInput('A', 'left', true)" ontouchend="touchInput('A', 'left', false)">←</div>
+                <div class="t-btn" onmousedown="touchInput('A', 'right', true)" onmouseup="touchInput('A', 'right', false)" ontouchstart="touchInput('A', 'right', true)" ontouchend="touchInput('A', 'right', false)">→</div>
+                <div class="t-btn" onmousedown="touchInput('A', 'down', true)" onmouseup="touchInput('A', 'down', false)" ontouchstart="touchInput('A', 'down', true)" ontouchend="touchInput('A', 'down', false)">↓</div>
+                <div class="t-btn confirm" id="confirm-a-btn" style="display:none" onclick="playerA.confirmAnswer()">確認 (Q)</div>
+            </div>
+
             <div class="board-container">
                 <canvas id="canvas-a" width="200" height="400"></canvas>
                 <div class="side-panel">
                     <div class="info-box">
                         <div class="info-label">NEXT</div>
-                        <canvas id="next-a" width="60" height="60"></canvas>
+                        <canvas id="next-a" width="50" height="50"></canvas>
                     </div>
                     <div class="info-box">
                         <div class="info-label">SCORE</div>
                         <div id="score-a" class="info-value">0</div>
                     </div>
                 </div>
-            </div>
-            <div id="math-a" class="math-overlay">
-                <div style="color: #ff4d4d; margin-bottom: 5px; font-weight: bold;">⚠️ 被攻擊！請解題解鎖！</div>
-                <div class="math-equation" id="eq-a">x + 5 = 12</div>
-                <div class="math-options" id="options-a"></div>
+                <div id="math-a" class="math-overlay">
+                    <div class="math-equation" id="eq-a">x + 5 = 12</div>
+                    <div class="math-options" id="options-a"></div>
+                </div>
             </div>
         </div>
 
         <!-- 玩家 B (右) -->
         <div id="player-b" class="player-section">
-            <h3 style="margin: 5px; color: #ff4d4d;">玩家 B</h3>
+            <!-- 觸控按鈕 B 在最右側 -->
+            <div class="touch-controls" id="touch-b">
+                <div class="t-btn" onmousedown="touchInput('B', 'up', true)" onmouseup="touchInput('B', 'up', false)" ontouchstart="touchInput('B', 'up', true)" ontouchend="touchInput('B', 'up', false)">旋轉</div>
+                <div class="t-btn" onmousedown="touchInput('B', 'left', true)" onmouseup="touchInput('B', 'left', false)" ontouchstart="touchInput('B', 'left', true)" ontouchend="touchInput('B', 'left', false)">←</div>
+                <div class="t-btn" onmousedown="touchInput('B', 'right', true)" onmouseup="touchInput('B', 'right', false)" ontouchstart="touchInput('B', 'right', true)" ontouchend="touchInput('B', 'right', false)">→</div>
+                <div class="t-btn" onmousedown="touchInput('B', 'down', true)" onmouseup="touchInput('B', 'down', false)" ontouchstart="touchInput('B', 'down', true)" ontouchend="touchInput('B', 'down', false)">↓</div>
+                <div class="t-btn confirm" id="confirm-b-btn" style="display:none" onclick="playerB.confirmAnswer()">確認 (Ent)</div>
+            </div>
+
             <div class="board-container">
                 <canvas id="canvas-b" width="200" height="400"></canvas>
                 <div class="side-panel">
                     <div class="info-box">
                         <div class="info-label">NEXT</div>
-                        <canvas id="next-b" width="60" height="60"></canvas>
+                        <canvas id="next-b" width="50" height="50"></canvas>
                     </div>
                     <div class="info-box">
                         <div class="info-label">SCORE</div>
                         <div id="score-b" class="info-value">0</div>
                     </div>
                 </div>
-            </div>
-            <div id="math-b" class="math-overlay">
-                <div style="color: #ff4d4d; margin-bottom: 5px; font-weight: bold;">⚠️ 被攻擊！請解題解鎖！</div>
-                <div class="math-equation" id="eq-b">2x - 4 = 10</div>
-                <div class="math-options" id="options-b"></div>
+                <div id="math-b" class="math-overlay">
+                    <div class="math-equation" id="eq-b">2x - 4 = 10</div>
+                    <div class="math-options" id="options-b"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- 結算畫面 -->
     <div id="global-over" class="global-game-over">
-        <div id="win-msg" class="win-celebration">🏆 恭喜 玩家 獲得最終勝利！ 🏆</div>
-        <button class="btn btn-help" style="margin-top:40px; padding: 15px 40px; font-size: 20px; color: white; z-index: 2120;" onclick="location.reload()">重新對決</button>
+        <div id="win-msg" class="win-celebration">🏆 恭喜 玩家 獲勝！ 🏆</div>
+        <button class="btn btn-help" style="margin-top:40px; padding: 15px 40px; font-size: 20px; color: white;" onclick="location.reload()">重新對決</button>
     </div>
 
     <div id="help-overlay">
         <div class="help-content">
-            <h2 style="text-align: center; color: var(--text-color);">《一元一次俄羅斯》規則與操作</h2>
+            <h2 style="text-align: center; color: var(--text-color);">《一元一次俄羅斯》操作說明</h2>
             
-            <h3>🎮 操作對照表</h3>
             <table class="help-table">
-                <tr>
-                    <th>功能</th>
-                    <th>玩家 A (鍵盤)</th>
-                    <th>玩家 B (鍵盤)</th>
-                    <th>搖桿 (Gamepad)</th>
-                </tr>
-                <tr>
-                    <td>左右移動</td>
-                    <td>A / D (可長按)</td>
-                    <td>左 / 右 方向鍵 (可長按)</td>
-                    <td>左搖桿 / 十字鍵</td>
-                </tr>
-                <tr>
-                    <td>加速下落</td>
-                    <td>S (長按)</td>
-                    <td>下 方向鍵 (長按)</td>
-                    <td>左搖桿 下 (長按)</td>
-                </tr>
-                <tr>
-                    <td>旋轉方塊</td>
-                    <td>W</td>
-                    <td>上 方向鍵</td>
-                    <td><strong>按鈕 1 (◯ / B)</strong></td>
-                </tr>
-                <tr>
-                    <td><strong>確認答案</strong></td>
-                    <td><strong>Q</strong></td>
-                    <td><strong>Enter</strong></td>
-                    <td><strong>按鈕 0 (A)</strong></td>
-                </tr>
-                <tr>
-                    <td>選擇答案</td>
-                    <td>A / D / W / S</td>
-                    <td>方向鍵 上下左右</td>
-                    <td>左搖桿 / 十字鍵</td>
-                </tr>
+                <tr><th>功能</th><th>玩家 A (鍵盤)</th><th>玩家 B (鍵盤)</th><th>平板 (觸控鈕)</th></tr>
+                <tr><td>左右移動</td><td>A / D</td><td>左 / 右 方向鍵</td><td>左右箭頭鈕</td></tr>
+                <tr><td>加速下落</td><td>S</td><td>下 方向鍵</td><td>向下箭頭鈕</td></tr>
+                <tr><td>旋轉方塊</td><td>W</td><td>上 方向鍵</td><td>旋轉鈕</td></tr>
+                <tr><td>確認答案</td><td>Q</td><td>Enter</td><td>確認鈕 (解題時出現)</td></tr>
             </table>
 
-            <div style="line-height: 1.6;">
-                <h3>⚔️ 攻擊、計分與炸彈</h3>
+            <div style="line-height: 1.6; font-size: 14px;">
+                <h3>⚔️ 遊戲規則</h3>
                 <ul>
-                    <li><strong>消除行數積分：</strong> 1行: 1分 / 2行: 5分 / 3行: 25分 / 4行: 100分。</li>
-                    <li><strong>特殊 B 方塊：</strong> 隨機出現含 "B" 的小格。消掉它可獲得<strong>炸彈</strong>。</li>
-                    <li><strong>炸彈功能：</strong> 炸彈落地碰到障礙會<strong>立即引爆</strong>，炸毀 5x5 範圍內的所有方塊。</li>
-                    <li><strong>數學解題：</strong> 消除 1 行以上即可攻擊對手，對手必須正確解題方可恢復操作。</li>
-                    <li><strong>即時淘汰：</strong> 若垃圾行將方塊推至頂部，無論是否在解題中都會立即判輸。</li>
-                    <li><strong>係數限制：</strong> 所有題目之係數、常數與答案皆不為 0。</li>
+                    <li>消除行數即可攻擊對手，對手需解對一元一次方程式才能繼續。</li>
+                    <li>隨機出現含 "B" 的小格，消除後可獲得<strong>炸彈</strong>。</li>
+                    <li>炸彈落地立即引爆周圍 5x5 範圍。</li>
                 </ul>
             </div>
-            <p style="text-align: center; color: #ffcc00; font-weight: bold; margin-top: 20px;">
-                請點擊右上角「開始戰鬥」啟動遊戲與音樂
-            </p>
+            <p style="text-align: center; color: #ffcc00; font-weight: bold;">請點擊右上角「開始戰鬥」啟動遊戲</p>
         </div>
     </div>
 
     <script>
-        const COLS = 10;
-        const ROWS = 20;
-        const BLOCK_SIZE = 20; 
-        const COLORS = [
-            null, 
-            '#FF0D72', // 1: T
-            '#0DC2FF', // 2: I
-            '#0DFF72', // 3: S
-            '#F538FF', // 4: Z
-            '#FF8E0D', // 5: L
-            '#FFE138', // 6: J
-            '#3877FF', // 7: O
-            '#777',    // 8: Garbage
-            null,      // 9: Empty
-            '#FFD700', // 10: Special B Block (Gold)
-            '#FF4500'  // 11: Bomb (Orange-Red)
-        ];
-        
-        const SHAPES = [
-            [],
-            [[0, 1, 0], [1, 1, 1], [0, 0, 0]],
-            [[0, 2, 0, 0], [0, 2, 0, 0], [0, 2, 0, 0], [0, 2, 0, 0]],
-            [[0, 3, 3], [3, 3, 0], [0, 0, 0]],
-            [[4, 4, 0], [0, 4, 4], [0, 0, 0]],
-            [[5, 0, 0], [5, 5, 5], [0, 0, 0]],
-            [[0, 0, 6], [6, 6, 6], [0, 0, 0]],
-            [[7, 7], [7, 7]]
-        ];
+        const COLS = 10, ROWS = 20, BLOCK_SIZE = 20; 
+        const COLORS = [null, '#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF', '#777', null, '#FFD700', '#FF4500'];
+        const SHAPES = [[], [[0, 1, 0], [1, 1, 1], [0, 0, 0]], [[0, 2, 0, 0], [0, 2, 0, 0], [0, 2, 0, 0], [0, 2, 0, 0]], [[0, 3, 3], [3, 3, 0], [0, 0, 0]], [[4, 4, 0], [0, 4, 4], [0, 0, 0]], [[5, 0, 0], [5, 5, 5], [0, 0, 0]], [[0, 0, 6], [6, 6, 6], [0, 0, 0]], [[7, 7], [7, 7]]];
 
-        let isPaused = true;
-        let isGameOver = false;
-
-        // 音樂與音效資源 - 修改為本地目錄檔案與 .mp3 格式
-        const BGM_FILES = [
-            'bgmusic(1).mp3',
-            'bgmusic(2).mp3',
-            'bgmusic(3).mp3',
-            'bgmusic(4).mp3',
-            'bgmusic(5).mp3',
-            'bgmusic(6).mp3',
-            'bgmusic(7).mp3'
-        ];
+        let isPaused = true, isGameOver = false;
+        const BGM_FILES = ['bgmusic(1).mp3', 'bgmusic(2).mp3', 'bgmusic(3).mp3', 'bgmusic(4).mp3', 'bgmusic(5).mp3', 'bgmusic(6).mp3', 'bgmusic(7).mp3'];
         const SFX_FILE = 'stonefall.mp3';
+        let currentBgmIndex = 0, audioEnabled = true, sfxEnabled = true, currentVolume = 0.5;
+        let bgmPlayer = new Audio(), sfxPlayer = new Audio();
         
-        let currentBgmIndex = 0;
-        let audioEnabled = true; 
-        let sfxEnabled = true;   
-        let currentVolume = 0.5;
-
-        let bgmPlayer = new Audio();
-        let sfxPlayer = new Audio();
-        
-        // 音量控制
-        function updateVolume(val) {
-            currentVolume = parseFloat(val);
-            bgmPlayer.volume = currentVolume;
-            sfxPlayer.volume = currentVolume;
-        }
-
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.warn(`Error attempting to enable full-screen mode: ${err.message}`);
-                });
-            } else {
-                if (document.exitFullscreen) document.exitFullscreen();
-            }
-        }
-
-        // 播放音效函數
-        function playStonefall() {
-            if (sfxEnabled) {
-                sfxPlayer.src = SFX_FILE;
-                sfxPlayer.volume = currentVolume;
-                sfxPlayer.play().catch(e => console.error("SFX play error. Ensure stonefall.mp3 exists.", e));
-            }
-        }
-
+        function updateVolume(val) { currentVolume = parseFloat(val); bgmPlayer.volume = currentVolume; sfxPlayer.volume = currentVolume; }
+        function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else if (document.exitFullscreen) document.exitFullscreen(); }
+        function playStonefall() { if (sfxEnabled) { sfxPlayer.src = SFX_FILE; sfxPlayer.volume = currentVolume; sfxPlayer.play().catch(() => {}); } }
         async function flashScreen() {
-            const overlay = document.getElementById('flash-overlay');
-            playStonefall();
-            
-            for (let i = 0; i < 3; i++) {
-                overlay.style.opacity = '1';
-                await new Promise(r => setTimeout(r, 80));
-                overlay.style.opacity = '0';
-                await new Promise(r => setTimeout(r, 80));
-            }
+            const overlay = document.getElementById('flash-overlay'); playStonefall();
+            for (let i = 0; i < 3; i++) { overlay.style.opacity = '1'; await new Promise(r => setTimeout(r, 80)); overlay.style.opacity = '0'; await new Promise(r => setTimeout(r, 80)); }
         }
-
-        function toggleMusic() {
-            audioEnabled = !audioEnabled;
-            updateAudioButtons();
-            if (audioEnabled) {
-                if (bgmPlayer.src) bgmPlayer.play(); else playNextBgm();
-            } else {
-                bgmPlayer.pause();
-            }
-        }
-
-        function toggleSFX() {
-            sfxEnabled = !sfxEnabled;
-            updateAudioButtons();
-        }
-
-        function updateAudioButtons() {
-            document.getElementById('bgm-toggle').innerText = `音樂: ${audioEnabled ? '開' : '關'}`;
-            document.getElementById('sfx-toggle').innerText = `音效: ${sfxEnabled ? '開' : '關'}`;
-        }
-
+        function toggleMusic() { audioEnabled = !audioEnabled; document.getElementById('bgm-toggle').innerText = `音樂: ${audioEnabled ? '開' : '關'}`; if (audioEnabled) playNextBgm(); else bgmPlayer.pause(); }
+        function toggleSFX() { sfxEnabled = !sfxEnabled; document.getElementById('sfx-toggle').innerText = `音效: ${sfxEnabled ? '開' : '關'}`; }
         function playNextBgm() {
-            if (!audioEnabled) return;
-            
-            bgmPlayer.src = BGM_FILES[currentBgmIndex];
-            bgmPlayer.volume = currentVolume;
-            
-            bgmPlayer.play().then(() => {
-                console.log("Now playing:", BGM_FILES[currentBgmIndex]);
-            }).catch(e => {
-                console.error("Audio error for:", BGM_FILES[currentBgmIndex], ". Auto-skipping...");
-                // 如果目前的檔案失敗，自動嘗試下一首
-                currentBgmIndex = (currentBgmIndex + 1) % BGM_FILES.length;
-                playNextBgm();
-            });
-            
+            if (!audioEnabled) return; bgmPlayer.src = BGM_FILES[currentBgmIndex]; bgmPlayer.volume = currentVolume;
+            bgmPlayer.play().catch(() => { currentBgmIndex = (currentBgmIndex + 1) % BGM_FILES.length; playNextBgm(); });
             currentBgmIndex = (currentBgmIndex + 1) % BGM_FILES.length;
         }
-        
         bgmPlayer.onended = playNextBgm;
 
         class MathEngine {
             static generateByLines(lines) {
                 let a, b, c, d, f, x, eq;
-                while (true) {
-                    x = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1);
-                    if (x !== 0) break;
-                }
+                while (true) { x = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1); if (x !== 0) break; }
                 if (lines === 1) {
-                    while (true) {
-                        a = (Math.floor(Math.random() * 15) + 1) * (Math.random() > 0.5 ? 1 : -1);
-                        b = x + a;
-                        if (a !== 0 && b !== 0) break;
-                    }
+                    while (true) { a = (Math.floor(Math.random() * 15) + 1) * (Math.random() > 0.5 ? 1 : -1); b = x + a; if (a !== 0 && b !== 0) break; }
                     eq = `x ${a >= 0 ? '+' : '-'} ${Math.abs(a)} = ${b}`;
                 } else if (lines === 2) {
-                    while (true) {
-                        a = (Math.floor(Math.random() * 5) + 2) * (Math.random() > 0.5 ? 1 : -1);
-                        b = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1);
-                        c = a * x + b;
-                        if (a !== 0 && b !== 0 && c !== 0) break;
-                    }
+                    while (true) { a = (Math.floor(Math.random() * 5) + 2) * (Math.random() > 0.5 ? 1 : -1); b = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1); c = a * x + b; if (a !== 0 && b !== 0 && c !== 0) break; }
                     eq = `${a}x ${b >= 0 ? '+' : '-'} ${Math.abs(b)} = ${c}`;
                 } else if (lines === 3) {
-                    while (true) {
-                        a = (Math.floor(Math.random() * 4) + 2) * (Math.random() > 0.5 ? 1 : -1);
-                        b = (Math.floor(Math.random() * 6) + 1) * (Math.random() > 0.5 ? 1 : -1);
-                        c = a * (x + b);
-                        if (a !== 0 && b !== 0 && c !== 0) break;
-                    }
+                    while (true) { a = (Math.floor(Math.random() * 4) + 2) * (Math.random() > 0.5 ? 1 : -1); b = (Math.floor(Math.random() * 6) + 1) * (Math.random() > 0.5 ? 1 : -1); c = a * (x + b); if (a !== 0 && b !== 0 && c !== 0) break; }
                     eq = `${a}(x ${b >= 0 ? '+' : '-'} ${Math.abs(b)}) = ${c}`;
                 } else {
-                    while (true) {
-                        a = Math.floor(Math.random() * 3) + 2; 
-                        b = Math.floor(Math.random() * 3) + 2; 
-                        c = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1);
-                        d = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1);
-                        f = (a * b - 1) * x + a * c + d;
-                        if (a !== 0 && b !== 0 && c !== 0 && d !== 0 && f !== 0) break;
-                    }
-                    const cSign = c >= 0 ? '+' : '-';
-                    const dSign = d >= 0 ? '+' : '-';
-                    const fSign = f >= 0 ? '+' : '-';
+                    while (true) { a = Math.floor(Math.random() * 3) + 2; b = Math.floor(Math.random() * 3) + 2; c = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1); d = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1); f = (a * b - 1) * x + a * c + d; if (a !== 0 && b !== 0 && c !== 0 && d !== 0 && f !== 0) break; }
+                    const cSign = c >= 0 ? '+' : '-'; const dSign = d >= 0 ? '+' : '-'; const fSign = f >= 0 ? '+' : '-';
                     eq = `${a}(${b}x ${cSign} ${Math.abs(c)}) ${dSign} ${Math.abs(d)} = x ${fSign} ${Math.abs(f)}`;
                 }
-                let options = this.shuffle([x, x+1, x-1, x+2]);
-                return { equation: eq, answer: x, options };
+                let options = this.shuffle([x, x+1, x-1, x+2]); return { equation: eq, answer: x, options };
             }
             static shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
         }
 
         class Player {
             constructor(id, canvasId, nextId, scoreId, mathId) {
-                this.id = id;
-                this.canvas = document.getElementById(canvasId);
-                this.ctx = this.canvas.getContext('2d');
-                this.nextCanvas = document.getElementById(nextId);
-                this.nextCtx = this.nextCanvas.getContext('2d');
-                this.scoreElement = document.getElementById(scoreId);
-                this.mathUI = document.getElementById(mathId);
-                
+                this.id = id; this.canvas = document.getElementById(canvasId); this.ctx = this.canvas.getContext('2d');
+                this.nextCanvas = document.getElementById(nextId); this.nextCtx = this.nextCanvas.getContext('2d');
+                this.scoreElement = document.getElementById(scoreId); this.mathUI = document.getElementById(mathId);
                 this.board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-                this.score = 0;
-                this.pos = { x: 0, y: 0 };
-                this.matrix = null;
-                this.nextMatrix = null;
-                this.isBombActive = false;
-                this.bombIsNext = false; 
-                
-                this.keyboardLeft = false;
-                this.keyboardRight = false;
-                this.keyboardDown = false;
-                this.gamepadLeft = false;
-                this.gamepadRight = false;
-                this.gamepadDown = false;
-                
+                this.score = 0; this.pos = { x: 0, y: 0 }; this.matrix = null; this.nextMatrix = null;
+                this.isBombActive = false; this.bombIsNext = false; 
+                this.keyboardLeft = this.keyboardRight = this.keyboardDown = false;
+                this.gamepadLeft = this.gamepadRight = this.gamepadDown = false;
+                this.touchLeft = this.touchRight = this.touchDown = false;
                 this.waitReleaseDown = false; 
-                this.moveCounter = 0; 
-                this.moveInterval = 100; 
-                this.dasDelay = 200; 
-                this.moveLocked = false; 
+                this.moveCounter = 0; this.moveInterval = 100; this.dasDelay = 200; this.moveLocked = false; 
                 this.keys = { left: false, right: false }; 
-
-                this.dropCounter = 0;
-                this.dropInterval = 1000;
-                this.isSolving = false;
-                this.currentProblem = null;
-                this.mathDifficulty = 1;
-                this.selectedIndex = 0;
+                this.dropCounter = 0; this.dropInterval = 1000;
+                this.isSolving = false; this.currentProblem = null; this.selectedIndex = 0;
                 this.lastGamepadState = { left: false, right: false, up: false, down: false, btn0: false, btn1: false };
-                
-                this.setNextPiece(); 
-                this.resetPiece();
+                this.setNextPiece(); this.resetPiece();
             }
 
             setNextPiece() {
                 const type = (Math.random() * 7 | 0) + 1;
                 let matrix = SHAPES[type].map(row => [...row]);
                 if (Math.random() < 0.2) {
-                    let blocks = [];
-                    matrix.forEach((row, y) => row.forEach((v, x) => { if (v) blocks.push({x, y}); }));
-                    if (blocks.length > 0) {
-                        const target = blocks[Math.floor(Math.random() * blocks.length)];
-                        matrix[target.y][target.x] = 10; 
-                    }
+                    let blocks = []; matrix.forEach((row, y) => row.forEach((v, x) => { if (v) blocks.push({x, y}); }));
+                    if (blocks.length > 0) { const target = blocks[Math.floor(Math.random() * blocks.length)]; matrix[target.y][target.x] = 10; }
                 }
                 this.nextMatrix = matrix;
             }
 
             resetPiece() {
-                if (this.bombIsNext) {
-                    this.matrix = [[11]];
-                    this.isBombActive = true;
-                    this.bombIsNext = false;
-                } else {
-                    this.matrix = this.nextMatrix;
-                    this.isBombActive = false;
-                    this.setNextPiece();
-                }
-                
-                this.pos.y = 0;
-                this.pos.x = (COLS / 2 | 0) - (this.matrix[0].length / 2 | 0);
-                this.waitReleaseDown = true; 
-                if (this.collide()) endGame(this.id);
-                this.drawNext();
+                if (this.bombIsNext) { this.matrix = [[11]]; this.isBombActive = true; this.bombIsNext = false; }
+                else { this.matrix = this.nextMatrix; this.isBombActive = false; this.setNextPiece(); }
+                this.pos.y = 0; this.pos.x = (COLS / 2 | 0) - (this.matrix[0].length / 2 | 0);
+                this.waitReleaseDown = true; if (this.collide()) endGame(this.id); this.drawNext();
             }
 
             collide(offset = { x: 0, y: 0 }) {
-                const m = this.matrix;
-                const p = this.pos;
+                const m = this.matrix; const p = this.pos;
                 for (let y = 0; y < m.length; ++y) {
                     for (let x = 0; x < m[y].length; ++x) {
                         if (m[y][x] !== 0) {
-                            const newY = y + p.y + offset.y;
-                            const newX = x + p.x + offset.x;
+                            const newY = y + p.y + offset.y, newX = x + p.x + offset.x;
                             if (newX < 0 || newX >= COLS || newY >= ROWS) return true;
                             if (newY >= 0 && this.board[newY][newX] !== 0) return true;
                         }
@@ -722,26 +567,17 @@
                 this.pos.y++;
                 if (this.collide()) {
                     this.pos.y--;
-                    if (this.isBombActive) {
-                        this.explode();
-                        this.resetPiece();
-                    } else {
-                        this.join();
-                        this.sweep();
-                        this.resetPiece();
-                    }
+                    if (this.isBombActive) { this.explode(); this.resetPiece(); }
+                    else { this.join(); this.sweep(); this.resetPiece(); }
                 }
                 this.dropCounter = 0;
             }
 
             explode() {
-                const centerX = this.pos.x;
-                const centerY = this.pos.y;
+                const centerX = this.pos.x, centerY = this.pos.y;
                 for (let y = centerY - 2; y <= centerY + 2; y++) {
                     for (let x = centerX - 2; x <= centerX + 2; x++) {
-                        if (y >= 0 && y < ROWS && x >= 0 && x < COLS) {
-                            this.board[y][x] = 0;
-                        }
+                        if (y >= 0 && y < ROWS && x >= 0 && x < COLS) this.board[y][x] = 0;
                     }
                 }
                 flashScreen();
@@ -749,392 +585,198 @@
 
             move(dir) {
                 if (isGameOver || isPaused || this.isSolving) return;
-                this.pos.x += dir;
-                if (this.collide()) {
-                    this.pos.x -= dir;
-                    return false;
-                }
-                return true;
+                this.pos.x += dir; if (this.collide()) { this.pos.x -= dir; return false; } return true;
             }
 
             selectMathOption(dirX, dirY) {
                 if (!this.isSolving) return;
                 let newIndex = this.selectedIndex;
-                if (dirX !== 0) {
-                    const row = Math.floor(newIndex / 2);
-                    newIndex = row * 2 + (newIndex % 2 + dirX + 2) % 2;
-                }
-                if (dirY !== 0) {
-                    newIndex = (newIndex + dirY * 2 + 4) % 4;
-                }
-                this.selectedIndex = newIndex;
-                this.renderMath();
+                if (dirX !== 0) { const row = Math.floor(newIndex / 2); newIndex = row * 2 + (newIndex % 2 + dirX + 2) % 2; }
+                if (dirY !== 0) newIndex = (newIndex + dirY * 2 + 4) % 4;
+                this.selectedIndex = newIndex; this.renderMath();
             }
 
             rotate() {
                 if (this.isSolving || isGameOver || isPaused || this.isBombActive) return;
                 const m = this.matrix;
-                for (let y = 0; y < m.length; ++y) {
-                    for (let x = 0; x < y; ++x) {
-                        [m[x][y], m[y][x]] = [m[y][x], m[x][y]];
-                    }
-                }
+                for (let y = 0; y < m.length; ++y) for (let x = 0; x < y; ++x) [m[x][y], m[y][x]] = [m[y][x], m[x][y]];
                 m.forEach(row => row.reverse());
                 if (this.collide()) {
                     m.forEach(row => row.reverse());
-                    for (let y = 0; y < m.length; ++y) {
-                        for (let x = 0; x < y; ++x) {
-                            [m[x][y], m[y][x]] = [m[y][x], m[x][y]];
-                        }
-                    }
+                    for (let y = 0; y < m.length; ++y) for (let x = 0; x < y; ++x) [m[x][y], m[y][x]] = [m[y][x], m[x][y]];
                 }
             }
 
-            join() {
-                this.matrix.forEach((row, y) => {
-                    row.forEach((value, x) => {
-                        if (value !== 0) {
-                            const newY = y + this.pos.y;
-                            if (newY >= 0) this.board[newY][x + this.pos.x] = value;
-                        }
-                    });
-                });
-            }
+            join() { this.matrix.forEach((row, y) => { row.forEach((value, x) => { if (value !== 0) { const newY = y + this.pos.y; if (newY >= 0) this.board[newY][x + this.pos.x] = value; } }); }); }
 
             sweep() {
-                let rowCount = 0;
-                let hasSpecial = false;
+                let rowCount = 0, hasSpecial = false;
                 outer: for (let y = ROWS - 1; y >= 0; --y) {
-                    let full = true;
-                    for (let x = 0; x < COLS; ++x) { 
-                        if (this.board[y][x] === 0) { full = false; break; }
-                    }
+                    let full = true; for (let x = 0; x < COLS; ++x) { if (this.board[y][x] === 0) { full = false; break; } }
                     if (!full) continue outer;
-
-                    for (let x = 0; x < COLS; ++x) {
-                        if (this.board[y][x] === 10) hasSpecial = true;
-                    }
-
-                    this.board.splice(y, 1);
-                    this.board.unshift(Array(COLS).fill(0));
-                    ++y;
-                    rowCount++;
+                    for (let x = 0; x < COLS; ++x) if (this.board[y][x] === 10) hasSpecial = true;
+                    this.board.splice(y, 1); this.board.unshift(Array(COLS).fill(0));
+                    ++y; rowCount++;
                 }
-
                 if (rowCount > 0) {
-                    const scores = [0, 1, 5, 25, 100];
-                    const add = scores[rowCount] || 0;
-                    this.score += add;
-                    this.scoreElement.innerText = this.score;
-                    this.showPopScore(add);
-
+                    const scores = [0, 1, 5, 25, 100]; const add = scores[rowCount] || 0;
+                    this.score += add; this.scoreElement.innerText = this.score; this.showPopScore(add);
                     const opponent = (this.id === 'A') ? playerB : playerA;
-                    opponent.receiveAttack(rowCount);
-                    opponent.triggerMath(rowCount);
-                    flashScreen();
-
-                    if (hasSpecial) {
-                        this.bombIsNext = true; 
-                    }
+                    opponent.receiveAttack(rowCount); opponent.triggerMath(rowCount);
+                    flashScreen(); if (hasSpecial) this.bombIsNext = true; 
                 }
             }
 
             receiveAttack(lines) {
                 for (let i = 0; i < lines; i++) {
                     const topRowOccupied = this.board[0].some(val => val !== 0);
-                    const row = Array(COLS).fill(8);
-                    row[Math.floor(Math.random() * COLS)] = 0;
-                    this.board.shift();
-                    this.board.push(row);
-                    if (topRowOccupied || this.collide()) {
-                        endGame(this.id);
-                        return;
-                    }
+                    const row = Array(COLS).fill(8); row[Math.floor(Math.random() * COLS)] = 0;
+                    this.board.shift(); this.board.push(row);
+                    if (topRowOccupied || this.collide()) { endGame(this.id); return; }
                 }
             }
 
             triggerMath(lines) {
                 if (lines < 1) return; 
-                this.isSolving = true;
-                this.mathDifficulty = lines;
-                this.currentProblem = MathEngine.generateByLines(lines);
-                this.selectedIndex = 0;
-                this.mathUI.style.display = 'block';
+                this.isSolving = true; this.currentProblem = MathEngine.generateByLines(lines); this.selectedIndex = 0;
+                this.mathUI.style.display = 'block'; document.getElementById(`confirm-${this.id.toLowerCase()}-btn`).style.display = 'flex';
                 this.renderMath();
             }
 
             renderMath() {
-                const eqDiv = this.mathUI.querySelector('.math-equation');
-                const optDiv = this.mathUI.querySelector('.math-options');
-                eqDiv.innerText = this.currentProblem.equation;
-                optDiv.innerHTML = '';
+                const eqDiv = this.mathUI.querySelector('.math-equation'), optDiv = this.mathUI.querySelector('.math-options');
+                eqDiv.innerText = this.currentProblem.equation; optDiv.innerHTML = '';
                 this.currentProblem.options.forEach((opt, i) => {
-                    const btn = document.createElement('div');
-                    btn.className = `option-btn ${i === this.selectedIndex ? 'selected' : ''}`;
-                    btn.innerText = opt;
-                    optDiv.appendChild(btn);
+                    const btn = document.createElement('div'); btn.className = `option-btn ${i === this.selectedIndex ? 'selected' : ''}`; btn.innerText = opt; optDiv.appendChild(btn);
                 });
             }
 
             confirmAnswer() {
                 if (!this.isSolving) return;
                 if (this.currentProblem.options[this.selectedIndex] === this.currentProblem.answer) {
-                    this.isSolving = false;
-                    this.mathUI.style.display = 'none';
-                } else {
-                    this.receiveAttack(1);
-                    this.currentProblem = MathEngine.generateByLines(1);
-                    this.renderMath();
-                }
+                    this.isSolving = false; this.mathUI.style.display = 'none';
+                    document.getElementById(`confirm-${this.id.toLowerCase()}-btn`).style.display = 'none';
+                } else { this.receiveAttack(1); this.currentProblem = MathEngine.generateByLines(1); this.renderMath(); }
             }
 
             showPopScore(val) {
-                const pop = document.createElement('div');
-                pop.className = 'score-pop';
-                pop.innerText = `+${val}`;
-                pop.style.left = '50%';
-                pop.style.top = '45%';
-                this.canvas.parentElement.appendChild(pop);
-                setTimeout(() => pop.remove(), 1200);
+                const pop = document.createElement('div'); pop.className = 'score-pop'; pop.innerText = `+${val}`; pop.style.left = '50%'; pop.style.top = '45%';
+                this.canvas.parentElement.appendChild(pop); setTimeout(() => pop.remove(), 1200);
             }
 
             draw() {
-                this.ctx.fillStyle = '#000';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                this.drawMatrix(this.board, { x: 0, y: 0 });
-                this.drawMatrix(this.matrix, this.pos);
-                if (this.isSolving) {
-                    this.ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
-                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                }
+                this.ctx.fillStyle = '#000'; this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                this.drawMatrix(this.board, { x: 0, y: 0 }); this.drawMatrix(this.matrix, this.pos);
+                if (this.isSolving) { this.ctx.fillStyle = 'rgba(255, 0, 0, 0.2)'; this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height); }
             }
 
             drawMatrix(matrix, offset) {
-                matrix.forEach((row, y) => {
-                    row.forEach((value, x) => {
-                        if (value !== 0) {
-                            const px = (x + offset.x) * BLOCK_SIZE;
-                            const py = (y + offset.y) * BLOCK_SIZE;
-                            
-                            if (value === 11) { // Bomb
-                                this.ctx.fillStyle = COLORS[11];
-                                this.ctx.beginPath();
-                                this.ctx.arc(px + BLOCK_SIZE/2, py + BLOCK_SIZE/2, BLOCK_SIZE/2 - 1, 0, Math.PI*2);
-                                this.ctx.fill();
-                                this.ctx.strokeStyle = '#fff';
-                                this.ctx.stroke();
-                            } else {
-                                this.ctx.fillStyle = COLORS[value];
-                                this.ctx.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
-                                this.ctx.strokeStyle = '#111';
-                                this.ctx.strokeRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
-                                if (value === 10) {
-                                    this.ctx.fillStyle = '#000';
-                                    this.ctx.font = 'bold 14px Segoe UI';
-                                    this.ctx.textAlign = 'center';
-                                    this.ctx.fillText('B', px + BLOCK_SIZE/2, py + BLOCK_SIZE - 5);
-                                }
-                            }
-                        }
-                    });
-                });
+                matrix.forEach((row, y) => { row.forEach((value, x) => {
+                    if (value !== 0) {
+                        const px = (x + offset.x) * BLOCK_SIZE, py = (y + offset.y) * BLOCK_SIZE;
+                        if (value === 11) { this.ctx.fillStyle = COLORS[11]; this.ctx.beginPath(); this.ctx.arc(px + BLOCK_SIZE/2, py + BLOCK_SIZE/2, BLOCK_SIZE/2 - 1, 0, Math.PI*2); this.ctx.fill(); this.ctx.strokeStyle = '#fff'; this.ctx.stroke(); }
+                        else { this.ctx.fillStyle = COLORS[value]; this.ctx.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE); this.ctx.strokeStyle = '#111'; this.ctx.strokeRect(px, py, BLOCK_SIZE, BLOCK_SIZE); if (value === 10) { this.ctx.fillStyle = '#000'; this.ctx.font = 'bold 12px Segoe UI'; this.ctx.textAlign = 'center'; this.ctx.fillText('B', px + BLOCK_SIZE/2, py + BLOCK_SIZE - 5); } }
+                    }
+                }); });
             }
 
             drawNext() {
-                this.nextCtx.fillStyle = '#0f3460';
-                this.nextCtx.fillRect(0, 0, 60, 60);
-                const m = this.bombIsNext ? [[11]] : this.nextMatrix;
-                const s = 12;
-                m.forEach((row, y) => { row.forEach((v, x) => {
-                    if (v) {
-                        this.nextCtx.fillStyle = COLORS[v];
-                        if (v === 11) {
-                            this.nextCtx.beginPath();
-                            this.nextCtx.arc(10 + x*s + s/2, 10 + y*s + s/2, s/2, 0, Math.PI*2);
-                            this.nextCtx.fill();
-                        } else {
-                            this.nextCtx.fillRect(10 + x*s, 10 + y*s, s, s);
-                        }
-                    }
-                })});
+                this.nextCtx.fillStyle = '#0f3460'; this.nextCtx.fillRect(0, 0, 50, 50);
+                const m = this.bombIsNext ? [[11]] : this.nextMatrix, s = 10;
+                m.forEach((row, y) => { row.forEach((v, x) => { if (v) { this.nextCtx.fillStyle = COLORS[v]; if (v === 11) { this.nextCtx.beginPath(); this.nextCtx.arc(10+x*s+s/2, 10+y*s+s/2, s/2, 0, Math.PI*2); this.nextCtx.fill(); } else { this.nextCtx.fillRect(10+x*s, 10+y*s, s, s); } } }); });
             }
 
             updateMovement(dt) {
                 if (this.isSolving || isGameOver || isPaused) return;
-                
-                const left = this.keyboardLeft || this.gamepadLeft;
-                const right = this.keyboardRight || this.gamepadRight;
-                let moveDir = 0;
-                if (left) moveDir = -1;
-                else if (right) moveDir = 1;
+                const left = this.keyboardLeft || this.gamepadLeft || this.touchLeft, right = this.keyboardRight || this.gamepadRight || this.touchRight;
+                let moveDir = 0; if (left) moveDir = -1; else if (right) moveDir = 1;
                 if (moveDir !== 0) {
-                    if (!this.moveLocked) {
-                        this.move(moveDir);
-                        this.moveLocked = true;
-                        this.moveCounter = 0;
-                    } else {
-                        this.moveCounter += dt;
-                        if (this.moveCounter > this.dasDelay) {
-                            if (this.moveCounter - this.dasDelay > this.moveInterval) {
-                                this.move(moveDir);
-                                this.moveCounter = this.dasDelay; 
-                            }
-                        }
-                    }
-                } else {
-                    this.moveLocked = false;
-                }
+                    if (!this.moveLocked) { this.move(moveDir); this.moveLocked = true; this.moveCounter = 0; }
+                    else { this.moveCounter += dt; if (this.moveCounter > this.dasDelay) { if (this.moveCounter - this.dasDelay > this.moveInterval) { this.move(moveDir); this.moveCounter = this.dasDelay; } } }
+                } else this.moveLocked = false;
             }
         }
 
-        const playerA = new Player('A', 'canvas-a', 'next-a', 'score-a', 'math-a');
-        const playerB = new Player('B', 'canvas-b', 'next-b', 'score-b', 'math-b');
+        const playerA = new Player('A', 'canvas-a', 'next-a', 'score-a', 'math-a'), playerB = new Player('B', 'canvas-b', 'next-b', 'score-b', 'math-b');
+
+        function touchInput(pID, action, isPressed) {
+            const p = (pID === 'A') ? playerA : playerB;
+            if (action === 'left') p.touchLeft = isPressed; if (action === 'right') p.touchRight = isPressed; if (action === 'down') p.touchDown = isPressed;
+            if (action === 'up' && isPressed) { if (p.isSolving) p.selectMathOption(0, -1); else p.rotate(); }
+            if (action === 'down' && isPressed && p.isSolving) p.selectMathOption(0, 1);
+        }
 
         window.addEventListener('keydown', e => {
             if (isPaused || isGameOver) return;
-            const code = e.code;
-            if (code === 'KeyA') {
-                if (playerA.isSolving) playerA.selectMathOption(-1, 0);
-                else { playerA.keyboardLeft = true; }
-            }
-            if (code === 'KeyD') {
-                if (playerA.isSolving) playerA.selectMathOption(1, 0);
-                else { playerA.keyboardRight = true; }
-            }
-            if (code === 'KeyS') {
-                if (playerA.isSolving) playerA.selectMathOption(0, 1);
-                else playerA.keyboardDown = true;
-            }
-            if (code === 'KeyW') {
-                if (playerA.isSolving) playerA.selectMathOption(0, -1);
-                else playerA.rotate();
-            }
-            if ((code === 'KeyQ' || code === 'KeyE') && playerA.isSolving) playerA.confirmAnswer();
-
-            if (code === 'ArrowLeft') {
-                if (playerB.isSolving) playerB.selectMathOption(-1, 0);
-                else { playerB.keyboardLeft = true; }
-            }
-            if (code === 'ArrowRight') {
-                if (playerB.isSolving) playerB.selectMathOption(1, 0);
-                else { playerB.keyboardRight = true; }
-            }
-            if (code === 'ArrowDown') {
-                if (playerB.isSolving) playerB.selectMathOption(0, 1);
-                else playerB.keyboardDown = true;
-            }
-            if (code === 'ArrowUp') {
-                if (playerB.isSolving) playerB.selectMathOption(0, -1);
-                else playerB.rotate();
-            }
-            if (code === 'Enter' && playerB.isSolving) playerB.confirmAnswer();
+            if (e.code === 'KeyA') { if (playerA.isSolving) playerA.selectMathOption(-1, 0); else playerA.keyboardLeft = true; }
+            if (e.code === 'KeyD') { if (playerA.isSolving) playerA.selectMathOption(1, 0); else playerA.keyboardRight = true; }
+            if (e.code === 'KeyS') { if (playerA.isSolving) playerA.selectMathOption(0, 1); else playerA.keyboardDown = true; }
+            if (e.code === 'KeyW') { if (playerA.isSolving) playerA.selectMathOption(0, -1); else playerA.rotate(); }
+            if ((e.code === 'KeyQ' || e.code === 'KeyE') && playerA.isSolving) playerA.confirmAnswer();
+            if (e.code === 'ArrowLeft') { if (playerB.isSolving) playerB.selectMathOption(-1, 0); else playerB.keyboardLeft = true; }
+            if (e.code === 'ArrowRight') { if (playerB.isSolving) playerB.selectMathOption(1, 0); else playerB.keyboardRight = true; }
+            if (e.code === 'ArrowDown') { if (playerB.isSolving) playerB.selectMathOption(0, 1); else playerB.keyboardDown = true; }
+            if (e.code === 'ArrowUp') { if (playerB.isSolving) playerB.selectMathOption(0, -1); else playerB.rotate(); }
+            if (e.code === 'Enter' && playerB.isSolving) playerB.confirmAnswer();
         });
 
         window.addEventListener('keyup', e => {
-            const code = e.code;
-            if (code === 'KeyA') playerA.keyboardLeft = false;
-            if (code === 'KeyD') playerA.keyboardRight = false;
-            if (code === 'KeyS') { playerA.keyboardDown = false; playerA.waitReleaseDown = false; }
-            if (code === 'ArrowLeft') playerB.keyboardLeft = false;
-            if (code === 'ArrowRight') playerB.keyboardRight = false;
-            if (code === 'ArrowDown') { playerB.keyboardDown = false; playerB.waitReleaseDown = false; }
+            if (e.code === 'KeyA') playerA.keyboardLeft = false; if (e.code === 'KeyD') playerA.keyboardRight = false; if (e.code === 'KeyS') playerA.keyboardDown = false;
+            if (e.code === 'ArrowLeft') playerB.keyboardLeft = false; if (e.code === 'ArrowRight') playerB.keyboardRight = false; if (e.code === 'ArrowDown') playerB.keyboardDown = false;
         });
 
         function pollGamepads() {
-            const gamepads = navigator.getGamepads();
-            if (!gamepads) return;
+            const gamepads = navigator.getGamepads(); if (!gamepads) return;
             [playerA, playerB].forEach((p, i) => {
-                const gp = gamepads[i];
-                if (!gp) return;
-                
-                const axisDown = gp.axes[1] > 0.5 || gp.buttons[13]?.pressed;
-                const axisUp = gp.axes[1] < -0.5 || gp.buttons[12]?.pressed;
-                const axisLeft = gp.axes[0] < -0.5 || gp.buttons[14]?.pressed;
-                const axisRight = gp.axes[0] > 0.5 || gp.buttons[15]?.pressed;
-                const btn0 = gp.buttons[0].pressed; 
-                const btn1 = gp.buttons[1].pressed; 
-
-                if (!axisDown) p.waitReleaseDown = false; 
-
+                const gp = gamepads[i]; if (!gp) return;
+                const down = gp.axes[1] > 0.5 || gp.buttons[13]?.pressed, up = gp.axes[1] < -0.5 || gp.buttons[12]?.pressed, left = gp.axes[0] < -0.5 || gp.buttons[14]?.pressed, right = gp.axes[0] > 0.5 || gp.buttons[15]?.pressed, b0 = gp.buttons[0].pressed, b1 = gp.buttons[1].pressed;
+                if (!down) p.waitReleaseDown = false;
                 if (p.isSolving) {
-                    if (axisLeft && !p.lastGamepadState.left) p.selectMathOption(-1, 0);
-                    if (axisRight && !p.lastGamepadState.right) p.selectMathOption(1, 0);
-                    if (axisDown && !p.lastGamepadState.down) p.selectMathOption(0, 1);
-                    if (axisUp && !p.lastGamepadState.up) p.selectMathOption(0, -1);
-                    if (btn0 && !p.lastGamepadState.btn0) p.confirmAnswer(); 
+                    if (left && !p.lastGamepadState.left) p.selectMathOption(-1, 0); if (right && !p.lastGamepadState.right) p.selectMathOption(1, 0);
+                    if (down && !p.lastGamepadState.down) p.selectMathOption(0, 1); if (up && !p.lastGamepadState.up) p.selectMathOption(0, -1);
+                    if (b0 && !p.lastGamepadState.btn0) p.confirmAnswer();
                 } else {
-                    p.gamepadLeft = axisLeft;
-                    p.gamepadRight = axisRight;
-                    p.gamepadDown = axisDown && !p.waitReleaseDown;
-                    if (btn1 && !p.lastGamepadState.btn1) p.rotate(); 
+                    p.gamepadLeft = left; p.gamepadRight = right; p.gamepadDown = down && !p.waitReleaseDown;
+                    if (b1 && !p.lastGamepadState.btn1) p.rotate();
                 }
-                p.lastGamepadState = { left: axisLeft, right: axisRight, up: axisUp, down: axisDown, btn0, btn1 };
+                p.lastGamepadState = { left, right, up, down, btn0: b0, btn1: b1 };
             });
         }
 
-        let lastTime = 0;
         function update(time = 0) {
-            const dt = time - lastTime;
-            lastTime = time;
-            pollGamepads();
+            const dt = time - lastTime; lastTime = time; pollGamepads();
             [playerA, playerB].forEach(p => {
-                p.updateMovement(dt);
-                if (!p.isSolving && !isGameOver && !isPaused) {
-                    p.dropCounter += dt;
-                    const isSoftDrop = p.keyboardDown || p.gamepadDown;
-                    const currentInterval = isSoftDrop ? 50 : p.dropInterval;
-                    if (p.dropCounter > currentInterval) { p.drop(); p.dropCounter = 0; }
+                p.updateMovement(dt); if (!p.isSolving && !isGameOver && !isPaused) {
+                    p.dropCounter += dt; const isSD = p.keyboardDown || p.gamepadDown || p.touchDown;
+                    if (p.dropCounter > (isSD ? 50 : p.dropInterval)) { p.drop(); p.dropCounter = 0; }
                 }
                 p.draw();
             });
             requestAnimationFrame(update);
         }
 
-        function createPetals() {
-            const container = document.getElementById('global-over');
+        function endGame(loserId) {
+            if (isGameOver) return; isGameOver = true; const winner = loserId === 'A' ? 'B' : 'A';
+            document.getElementById('win-msg').innerText = `🏆 恭喜 玩家 ${winner} 獲勝！ 🏆`; document.getElementById('global-over').style.display = 'flex';
             const colors = ['#ffc0cb', '#ff69b4', '#ff1493', '#fff', '#ffd700'];
             for (let i = 0; i < 100; i++) {
-                const petal = document.createElement('div');
-                petal.className = 'petal';
-                const size = Math.random() * 10 + 10;
-                petal.style.width = size + 'px';
-                petal.style.height = size + 'px';
+                const petal = document.createElement('div'); petal.className = 'petal';
+                const size = Math.random() * 10 + 10; petal.style.width = petal.style.height = size + 'px';
                 petal.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                petal.style.left = Math.random() * 100 + '%';
-                petal.style.animation = `fall ${Math.random() * 3 + 2}s linear infinite`;
-                petal.style.animationDelay = Math.random() * 5 + 's';
-                petal.style.opacity = Math.random();
-                container.appendChild(petal);
+                petal.style.left = Math.random() * 100 + '%'; petal.style.animation = `fall ${Math.random() * 3 + 2}s linear infinite`;
+                petal.style.animationDelay = Math.random() * 5 + 's'; document.getElementById('global-over').appendChild(petal);
             }
-        }
-
-        function endGame(loserId) {
-            if (isGameOver) return;
-            isGameOver = true;
-            const winner = loserId === 'A' ? 'B' : 'A';
-            const winMsg = document.getElementById('win-msg');
-            winMsg.innerText = `🏆 恭喜 玩家 ${winner} 獲得最終勝利！ 🏆`;
-            document.getElementById('global-over').style.display = 'flex';
-            createPetals(); 
             bgmPlayer.pause();
         }
 
         function startGameSession() {
-            isPaused = false;
-            isGameOver = false;
-            document.getElementById('help-overlay').style.display = 'none';
-            document.getElementById('main-start-btn').style.display = 'none';
-            document.getElementById('restart-btn').style.display = 'block'; 
-            updateAudioButtons();
-            
-            if (audioEnabled) {
-                currentBgmIndex = 0;
-                playNextBgm();
-            }
+            isPaused = false; isGameOver = false; document.getElementById('help-overlay').style.display = 'none';
+            document.getElementById('main-start-btn').style.display = 'none'; document.getElementById('restart-btn').style.display = 'block';
+            document.getElementById('touch-a').style.display = 'flex'; document.getElementById('touch-b').style.display = 'flex';
+            if (audioEnabled) { currentBgmIndex = 0; playNextBgm(); }
         }
 
-        update();
-        document.getElementById('help-overlay').style.display = 'flex';
+        let lastTime = 0; update(); document.getElementById('help-overlay').style.display = 'flex';
     </script>
 </body>
 </html>

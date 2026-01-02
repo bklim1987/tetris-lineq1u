@@ -1209,15 +1209,15 @@
                     
                     if (a >= 0) {
                         solution = '<div class="practice-solution-step">原式：x + ' + a + ' = ' + b + '</div>' +
-                            '<div class="practice-solution-step">将 ' + a + ' 移到等号右边，符号变号</div>' +
-                            '<div class="practice-solution-step">x = ' + b + ' - ' + a + '</div>' +
-                            '<div class="practice-solution-step">x = ' + (b - a) + '</div>' +
+                            '<div class="practice-solution-step">等号左右各减去 ' + a + '</div>' +
+                            '<div class="practice-solution-step">x + ' + a + ' - ' + a + ' = ' + b + ' - ' + a + '</div>' +
+                            '<div class="practice-solution-step">x = ' + x + '</div>' +
                             '<div class="practice-solution-answer">答案：x = ' + x + '</div>';
                     } else {
                         solution = '<div class="practice-solution-step">原式：x - ' + Math.abs(a) + ' = ' + b + '</div>' +
-                            '<div class="practice-solution-step">将 ' + Math.abs(a) + ' 移到等号右边，符号变号</div>' +
-                            '<div class="practice-solution-step">x = ' + b + ' + ' + Math.abs(a) + '</div>' +
-                            '<div class="practice-solution-step">x = ' + (b + Math.abs(a)) + '</div>' +
+                            '<div class="practice-solution-step">等号左右各加上 ' + Math.abs(a) + '</div>' +
+                            '<div class="practice-solution-step">x - ' + Math.abs(a) + ' + ' + Math.abs(a) + ' = ' + b + ' + ' + Math.abs(a) + '</div>' +
+                            '<div class="practice-solution-step">x = ' + x + '</div>' +
                             '<div class="practice-solution-answer">答案：x = ' + x + '</div>';
                     }
                 } else if (type === 2) {
@@ -1226,32 +1226,56 @@
                     distractors = this.getDistractorsType2(x, a, b, c);
                     
                     const bSign = b >= 0 ? '+' : '-';
-                    const moveB = b >= 0 ? ('-' + b) : ('+' + Math.abs(b));
-                    const afterMoveB = c - b;
+                    const bAbs = Math.abs(b);
+                    const afterB = c - b;
                     
-                    solution = '<div class="practice-solution-step">原式：' + a + 'x ' + bSign + ' ' + Math.abs(b) + ' = ' + c + '</div>' +
-                        '<div class="practice-solution-step">将常数项 ' + (b >= 0 ? b : '(' + b + ')') + ' 移到等号右边</div>' +
-                        '<div class="practice-solution-step">' + a + 'x = ' + c + ' ' + moveB + '</div>' +
-                        '<div class="practice-solution-step">' + a + 'x = ' + afterMoveB + '</div>' +
-                        '<div class="practice-solution-step">两边同除以 ' + a + '</div>' +
-                        '<div class="practice-solution-step">x = ' + afterMoveB + ' ÷ ' + a + '</div>' +
-                        '<div class="practice-solution-answer">答案：x = ' + x + '</div>';
+                    if (b >= 0) {
+                        solution = '<div class="practice-solution-step">原式：' + a + 'x + ' + b + ' = ' + c + '</div>' +
+                            '<div class="practice-solution-step">等号左右各减去 ' + b + '</div>' +
+                            '<div class="practice-solution-step">' + a + 'x + ' + b + ' - ' + b + ' = ' + c + ' - ' + b + '</div>' +
+                            '<div class="practice-solution-step">' + a + 'x = ' + afterB + '</div>' +
+                            '<div class="practice-solution-step">等号左右各除以 ' + a + '</div>' +
+                            '<div class="practice-solution-step">' + a + 'x ÷ ' + a + ' = ' + afterB + ' ÷ ' + a + '</div>' +
+                            '<div class="practice-solution-step">x = ' + x + '</div>' +
+                            '<div class="practice-solution-answer">答案：x = ' + x + '</div>';
+                    } else {
+                        solution = '<div class="practice-solution-step">原式：' + a + 'x - ' + bAbs + ' = ' + c + '</div>' +
+                            '<div class="practice-solution-step">等号左右各加上 ' + bAbs + '</div>' +
+                            '<div class="practice-solution-step">' + a + 'x - ' + bAbs + ' + ' + bAbs + ' = ' + c + ' + ' + bAbs + '</div>' +
+                            '<div class="practice-solution-step">' + a + 'x = ' + afterB + '</div>' +
+                            '<div class="practice-solution-step">等号左右各除以 ' + a + '</div>' +
+                            '<div class="practice-solution-step">' + a + 'x ÷ ' + a + ' = ' + afterB + ' ÷ ' + a + '</div>' +
+                            '<div class="practice-solution-step">x = ' + x + '</div>' +
+                            '<div class="practice-solution-answer">答案：x = ' + x + '</div>';
+                    }
                 } else if (type === 3) {
                     while (true) {a = (Math.floor(Math.random() * 4) + 2) * (Math.random() > 0.5 ? 1 : -1); b = (Math.floor(Math.random() * 6) + 1) * (Math.random() > 0.5 ? 1 : -1); c = a * (x + b); if (a !== 0 && b !== 0 && c !== 0) break;}
                     eq = `${a}(x ${b >= 0 ? '+' : '-'} ${Math.abs(b)}) = ${c}`;
                     distractors = this.getDistractorsType3(x, a, b, c);
                     
                     const bSign = b >= 0 ? '+' : '-';
+                    const bAbs = Math.abs(b);
                     const insideBracket = c / a;
-                    const moveB = b >= 0 ? ('-' + b) : ('+' + Math.abs(b));
                     
-                    solution = '<div class="practice-solution-step">原式：' + a + '(x ' + bSign + ' ' + Math.abs(b) + ') = ' + c + '</div>' +
-                        '<div class="practice-solution-step">两边同除以 ' + a + '</div>' +
-                        '<div class="practice-solution-step">x ' + bSign + ' ' + Math.abs(b) + ' = ' + c + ' ÷ ' + a + '</div>' +
-                        '<div class="practice-solution-step">x ' + bSign + ' ' + Math.abs(b) + ' = ' + insideBracket + '</div>' +
-                        '<div class="practice-solution-step">将 ' + (b >= 0 ? b : '(' + b + ')') + ' 移到等号右边</div>' +
-                        '<div class="practice-solution-step">x = ' + insideBracket + ' ' + moveB + '</div>' +
-                        '<div class="practice-solution-answer">答案：x = ' + x + '</div>';
+                    if (b >= 0) {
+                        solution = '<div class="practice-solution-step">原式：' + a + '(x + ' + b + ') = ' + c + '</div>' +
+                            '<div class="practice-solution-step">等号左右各除以 ' + a + '</div>' +
+                            '<div class="practice-solution-step">' + a + '(x + ' + b + ') ÷ ' + a + ' = ' + c + ' ÷ ' + a + '</div>' +
+                            '<div class="practice-solution-step">x + ' + b + ' = ' + insideBracket + '</div>' +
+                            '<div class="practice-solution-step">等号左右各减去 ' + b + '</div>' +
+                            '<div class="practice-solution-step">x + ' + b + ' - ' + b + ' = ' + insideBracket + ' - ' + b + '</div>' +
+                            '<div class="practice-solution-step">x = ' + x + '</div>' +
+                            '<div class="practice-solution-answer">答案：x = ' + x + '</div>';
+                    } else {
+                        solution = '<div class="practice-solution-step">原式：' + a + '(x - ' + bAbs + ') = ' + c + '</div>' +
+                            '<div class="practice-solution-step">等号左右各除以 ' + a + '</div>' +
+                            '<div class="practice-solution-step">' + a + '(x - ' + bAbs + ') ÷ ' + a + ' = ' + c + ' ÷ ' + a + '</div>' +
+                            '<div class="practice-solution-step">x - ' + bAbs + ' = ' + insideBracket + '</div>' +
+                            '<div class="practice-solution-step">等号左右各加上 ' + bAbs + '</div>' +
+                            '<div class="practice-solution-step">x - ' + bAbs + ' + ' + bAbs + ' = ' + insideBracket + ' + ' + bAbs + '</div>' +
+                            '<div class="practice-solution-step">x = ' + x + '</div>' +
+                            '<div class="practice-solution-answer">答案：x = ' + x + '</div>';
+                    }
                 }
 
                 let options = this.buildOptions(x, distractors);

@@ -92,12 +92,13 @@ Math problem options are designed to capture common student misconceptions, with
 - b - c (reversed subtraction)
 - -x, x+1, x-1 (fallbacks)
 
-**Type 3: a(x ± b) = c** (Pool of 8, randomly select 3)
+**Type 3: a(x ± b) = c** (Pool of 9, randomly select 3)
 - c / a (forgot inner constant)
 - c / a + b (wrong direction)
 - c - b (wrong operation order)
 - (c - b) / a (distributed incorrectly)
 - c / a + 2b (double constant error)
+- c - ab (forgot to divide by a)
 - -x, x+1, x-1 (fallbacks)
 
 **Type 4: Complex equations**

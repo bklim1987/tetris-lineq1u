@@ -237,40 +237,66 @@
             grid-row: 3;
         }
 
-        /* 方程式解题区 - 扩大小窗口并固定单行呈现 */
+        /* 方程式解题区 - 完全在盘面外侧显示 */
         .math-overlay {
             position: absolute;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 320px;
-            max-width: 95%;
+            transform: translateY(-50%);
+            width: 200px;
             background: rgba(10, 30, 60, 0.98);
             border: 4px solid var(--text-color);
             border-radius: 15px;
-            padding: 20px 10px;
+            padding: 15px 8px;
             text-align: center;
             display: none;
             z-index: 500;
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
         }
 
-        @media (max-width: 600px) {
+        #math-a {
+            right: 100%;
+            left: auto;
+            margin-right: 10px;
+        }
+
+        #math-b {
+            left: 100%;
+            right: auto;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 700px) {
             .math-overlay {
-                width: 180px;
-                padding: 12px 6px;
+                width: 150px;
+                padding: 10px 5px;
             }
             .math-equation {
                 font-size: 18px;
-                padding: 10px 6px;
-                margin-bottom: 12px;
+                padding: 8px 5px;
+                margin-bottom: 10px;
             }
             .math-options {
-                gap: 8px;
+                gap: 6px;
             }
             .option-btn {
                 padding: 10px 4px;
                 font-size: 16px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .math-overlay {
+                width: 120px;
+                padding: 8px 4px;
+            }
+            .math-equation {
+                font-size: 14px;
+                padding: 6px 4px;
+                margin-bottom: 8px;
+            }
+            .option-btn {
+                padding: 8px 3px;
+                font-size: 14px;
             }
         }
 
@@ -311,6 +337,32 @@
             border-color: #00ffcc;
             transform: scale(1.05);
             box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
+        }
+
+        .answer-feedback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            font-weight: bold;
+            z-index: 600;
+            pointer-events: none;
+            animation: feedbackPop 0.5s ease-out;
+        }
+
+        .answer-feedback.correct {
+            color: #00ffcc;
+        }
+
+        .answer-feedback.wrong {
+            color: #ff4444;
+        }
+
+        @keyframes feedbackPop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
 
         /* 说明窗口优化 */
@@ -395,25 +447,83 @@
             background: rgba(0, 0, 0, 0.95);
             display: none;
             flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
             z-index: 2200;
             overflow-y: auto;
-            padding: 20px;
+            padding: 10px;
             box-sizing: border-box;
         }
 
         .review-content {
-            max-width: 800px;
+            display: flex;
+            flex-direction: column;
             width: 100%;
+            height: 100%;
             color: #fff;
         }
 
         .review-title {
             text-align: center;
             color: #ffcc00;
-            font-size: 28px;
-            margin-bottom: 20px;
+            font-size: 24px;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .review-columns {
+            display: flex;
+            flex: 1;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        .review-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .review-column-header {
+            background: #0f3460;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: #00ffcc;
+        }
+
+        .review-column-questions {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .review-column-footer {
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #333;
+            background: rgba(15, 52, 96, 0.5);
+        }
+
+        .review-status {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .review-status.pass {
+            color: #00ff00;
+        }
+
+        .review-status.fail {
+            color: #ff4444;
+        }
+
+        .review-global-footer {
+            padding: 15px;
+            text-align: center;
+            flex-shrink: 0;
         }
 
         .review-question {
@@ -723,10 +833,26 @@
     <div id="review-overlay" class="review-overlay">
         <div class="review-content">
             <h2 class="review-title">答题复盘</h2>
-            <div id="review-questions"></div>
-            <div class="review-buttons" id="review-buttons">
-                <button class="review-btn submit" onclick="submitReview()">提交答案</button>
-                <button class="review-btn restart" onclick="location.reload()">重新对决</button>
+            <div class="review-columns">
+                <div class="review-column" id="review-col-a">
+                    <div class="review-column-header">玩家 A 答错的题</div>
+                    <div class="review-column-questions" id="review-questions-a"></div>
+                    <div class="review-column-footer">
+                        <div class="review-status" id="review-status-a"></div>
+                        <button class="review-btn submit" id="submit-a" onclick="submitReviewPlayer('A')">提交答案</button>
+                    </div>
+                </div>
+                <div class="review-column" id="review-col-b">
+                    <div class="review-column-header">玩家 B 答错的题</div>
+                    <div class="review-column-questions" id="review-questions-b"></div>
+                    <div class="review-column-footer">
+                        <div class="review-status" id="review-status-b"></div>
+                        <button class="review-btn submit" id="submit-b" onclick="submitReviewPlayer('B')">提交答案</button>
+                    </div>
+                </div>
+            </div>
+            <div class="review-global-footer">
+                <button class="review-btn restart" id="review-restart" onclick="location.reload()" style="display:none;">重新对决</button>
             </div>
         </div>
     </div>
@@ -862,6 +988,7 @@
                 this.keys = {left: false, right: false};
                 this.dropCounter = 0; this.dropInterval = 1000;
                 this.isSolving = false; this.currentProblem = null; this.selectedIndex = 0;
+                this.feedbackShowing = false;
                 this.lastGamepadState = {left: false, right: false, up: false, down: false, btn0: false, btn1: false};
                 this.wrongAnswers = [];
                 this.setNextPiece(); this.resetPiece();
@@ -996,23 +1123,35 @@
             }
 
             confirmAnswer() {
-                if (!this.isSolving) return;
+                if (!this.isSolving || this.feedbackShowing) return;
                 const selectedAnswer = this.currentProblem.options[this.selectedIndex];
-                if (selectedAnswer === this.currentProblem.answer) {
-                    this.isSolving = false;
-                    this.mathUI.style.display = 'none';
-                } else {
-                    this.wrongAnswers.push({
-                        equation: this.currentProblem.equation,
-                        options: [...this.currentProblem.options],
-                        correctAnswer: this.currentProblem.answer,
-                        wrongChoice: selectedAnswer,
-                        player: this.id
-                    });
-                    this.receiveAttack(1);
-                    this.currentProblem = MathEngine.generateByLines(1);
-                    this.renderMath();
-                }
+                const isCorrect = selectedAnswer === this.currentProblem.answer;
+                
+                this.feedbackShowing = true;
+                const feedback = document.createElement('div');
+                feedback.className = `answer-feedback ${isCorrect ? 'correct' : 'wrong'}`;
+                feedback.innerText = isCorrect ? '✓' : '✗';
+                this.mathUI.appendChild(feedback);
+                
+                setTimeout(() => {
+                    feedback.remove();
+                    this.feedbackShowing = false;
+                    if (isCorrect) {
+                        this.isSolving = false;
+                        this.mathUI.style.display = 'none';
+                    } else {
+                        this.wrongAnswers.push({
+                            equation: this.currentProblem.equation,
+                            options: [...this.currentProblem.options],
+                            correctAnswer: this.currentProblem.answer,
+                            wrongChoice: selectedAnswer,
+                            player: this.id
+                        });
+                        this.receiveAttack(1);
+                        this.currentProblem = MathEngine.generateByLines(1);
+                        this.renderMath();
+                    }
+                }, 600);
             }
 
             showPopScore(val) {
@@ -1166,115 +1305,131 @@
         }
 
         let reviewState = {
-            questions: [],
-            selectedAnswers: {},
-            revealed: false,
-            practiceAttempted: false
+            A: { questions: [], selectedAnswers: {}, attempted: false, revealed: false, passed: false },
+            B: { questions: [], selectedAnswers: {}, attempted: false, revealed: false, passed: false }
         };
 
         function openReview() {
-            const allWrong = [...playerA.wrongAnswers, ...playerB.wrongAnswers];
-            
             reviewState = {
-                questions: allWrong,
-                selectedAnswers: {},
-                revealed: false,
-                practiceAttempted: false
+                A: { questions: [...playerA.wrongAnswers], selectedAnswers: {}, attempted: false, revealed: false, passed: false },
+                B: { questions: [...playerB.wrongAnswers], selectedAnswers: {}, attempted: false, revealed: false, passed: false }
             };
             
             document.getElementById('result-a').style.display = 'none';
             document.getElementById('result-b').style.display = 'none';
             document.getElementById('global-over-buttons').style.display = 'none';
             document.getElementById('review-overlay').style.display = 'flex';
+            document.getElementById('review-restart').style.display = 'none';
             renderReviewQuestions();
         }
 
         function renderReviewQuestions() {
-            const container = document.getElementById('review-questions');
-            const buttonsContainer = document.getElementById('review-buttons');
+            ['A', 'B'].forEach(pid => {
+                const state = reviewState[pid];
+                const container = document.getElementById(`review-questions-${pid.toLowerCase()}`);
+                const statusEl = document.getElementById(`review-status-${pid.toLowerCase()}`);
+                const submitBtn = document.getElementById(`submit-${pid.toLowerCase()}`);
+                
+                if (state.questions.length === 0) {
+                    container.innerHTML = '<div class="no-wrong-answers" style="text-align:center;color:#00ffcc;padding:20px;">没有答错的题目</div>';
+                    statusEl.innerHTML = '';
+                    submitBtn.style.display = 'none';
+                    state.passed = true;
+                } else {
+                    container.innerHTML = state.questions.map((q, qIdx) => {
+                        return `
+                            <div class="review-question" data-player="${pid}" data-qidx="${qIdx}">
+                                <div class="review-equation">${q.equation}</div>
+                                <div class="review-options">
+                                    ${q.options.map((opt, optIdx) => {
+                                        let className = 'review-option';
+                                        const isSelected = state.selectedAnswers[qIdx] === optIdx;
+                                        const isCorrect = opt === q.correctAnswer;
+                                        
+                                        if (state.revealed) {
+                                            if (isCorrect) {
+                                                className += ' correct-revealed';
+                                            } else if (isSelected && !isCorrect) {
+                                                className += ' wrong-revealed';
+                                            } else {
+                                                className += ' normal';
+                                            }
+                                        } else {
+                                            if (isSelected) {
+                                                className += ' selected';
+                                            } else {
+                                                className += ' normal';
+                                            }
+                                        }
+                                        
+                                        const clickable = !state.revealed && !state.attempted;
+                                        return '<div class="' + className + '"' + (clickable ? ' onclick="selectReviewOption(\'' + pid + '\', ' + qIdx + ', ' + optIdx + ')"' : '') + '>' + opt + '</div>';
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    if (state.passed) {
+                        statusEl.className = 'review-status pass';
+                        statusEl.innerHTML = '通过！答案已公布';
+                        submitBtn.style.display = 'none';
+                    } else if (state.attempted && !state.passed) {
+                        statusEl.className = 'review-status fail';
+                        statusEl.innerHTML = '错误超过50%，请重新作答';
+                        submitBtn.innerText = '重新作答';
+                        submitBtn.onclick = () => retryPlayer(pid);
+                        submitBtn.style.display = 'inline-block';
+                    } else {
+                        statusEl.className = 'review-status';
+                        statusEl.innerHTML = '';
+                        submitBtn.innerText = '提交答案';
+                        submitBtn.onclick = () => submitReviewPlayer(pid);
+                        submitBtn.style.display = 'inline-block';
+                    }
+                }
+            });
             
-            if (reviewState.questions.length === 0) {
-                container.innerHTML = '<div class="no-wrong-answers">本局没有答错的题目，表现优秀！</div>';
-                buttonsContainer.innerHTML = '<button class="review-btn restart" onclick="location.reload()">重新对决</button>';
-                return;
-            }
-            
-            container.innerHTML = reviewState.questions.map((q, qIdx) => {
-                const playerLabel = q.player === 'A' ? '玩家 A' : '玩家 B';
-                return `
-                    <div class="review-question" data-qidx="${qIdx}">
-                        <div class="review-question-header">
-                            <span>题目 ${qIdx + 1}</span>
-                            <span>${playerLabel} 答错</span>
-                        </div>
-                        <div class="review-equation">${q.equation}</div>
-                        <div class="review-options">
-                            ${q.options.map((opt, optIdx) => {
-                                let className = 'review-option';
-                                const isWrongOriginal = opt === q.wrongChoice;
-                                const isSelected = reviewState.selectedAnswers[qIdx] === optIdx;
-                                const isCorrect = opt === q.correctAnswer;
-                                
-                                if (reviewState.revealed) {
-                                    if (isCorrect) {
-                                        className += ' correct-revealed';
-                                    } else if (isSelected && !isCorrect) {
-                                        className += ' wrong-revealed';
-                                    } else if (isWrongOriginal) {
-                                        className += ' wrong-original';
-                                    } else {
-                                        className += ' normal';
-                                    }
-                                } else {
-                                    if (isWrongOriginal && !reviewState.practiceAttempted) {
-                                        className += ' wrong-original';
-                                    } else if (isSelected) {
-                                        className += ' selected';
-                                    } else {
-                                        className += ' normal';
-                                    }
-                                }
-                                
-                                const clickable = !reviewState.revealed;
-                                return `<div class="${className}" ${clickable ? `onclick="selectReviewOption(${qIdx}, ${optIdx})"` : ''}>${opt}</div>`;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            if (reviewState.revealed) {
-                buttonsContainer.innerHTML = `
-                    <button class="review-btn retry" onclick="retryPractice()">重新作答</button>
-                    <button class="review-btn restart" onclick="location.reload()">重新对决</button>
-                `;
-            } else {
-                buttonsContainer.innerHTML = `
-                    <button class="review-btn submit" onclick="submitReview()">提交答案</button>
-                    <button class="review-btn restart" onclick="location.reload()">重新对决</button>
-                `;
-            }
+            const bothPassed = reviewState.A.passed && reviewState.B.passed;
+            const bothFailed = reviewState.A.attempted && !reviewState.A.passed && 
+                              reviewState.B.attempted && !reviewState.B.passed;
+            const restartBtn = document.getElementById('review-restart');
+            restartBtn.style.display = (bothPassed || bothFailed) ? 'inline-block' : 'none';
         }
 
-        function selectReviewOption(qIdx, optIdx) {
-            if (reviewState.revealed) return;
-            reviewState.selectedAnswers[qIdx] = optIdx;
+        function selectReviewOption(pid, qIdx, optIdx) {
+            const state = reviewState[pid];
+            if (state.revealed || state.attempted) return;
+            state.selectedAnswers[qIdx] = optIdx;
             renderReviewQuestions();
         }
 
-        function submitReview() {
-            if (reviewState.questions.length === 0) return;
-            reviewState.revealed = true;
-            reviewState.practiceAttempted = true;
+        function submitReviewPlayer(pid) {
+            const state = reviewState[pid];
+            if (state.questions.length === 0) return;
+            
+            let correct = 0;
+            state.questions.forEach((q, qIdx) => {
+                const selectedIdx = state.selectedAnswers[qIdx];
+                if (selectedIdx !== undefined && q.options[selectedIdx] === q.correctAnswer) {
+                    correct++;
+                }
+            });
+            
+            const passThreshold = Math.ceil(state.questions.length / 2);
+            state.attempted = true;
+            state.passed = correct >= passThreshold;
+            state.revealed = state.passed;
             renderReviewQuestions();
-            document.getElementById('review-overlay').scrollTop = 0;
         }
 
-        function retryPractice() {
-            reviewState.selectedAnswers = {};
-            reviewState.revealed = false;
+        function retryPlayer(pid) {
+            const state = reviewState[pid];
+            state.selectedAnswers = {};
+            state.attempted = false;
+            state.revealed = false;
+            state.passed = false;
             renderReviewQuestions();
-            document.getElementById('review-overlay').scrollTop = 0;
         }
 
         function startGameSession() {

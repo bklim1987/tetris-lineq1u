@@ -35,12 +35,24 @@ python -m http.server 5000 --bind 0.0.0.0
 ## Recent Changes (2026-01-02)
 - Converted all traditional Chinese to simplified Chinese
 - Added Credits attribution line below the rules table (inside help-content, below red border)
-- Implemented answer review system with:
-  - Semi-transparent game over popup showing loser's board state
-  - Wrong answer tracking during gameplay
-  - Review screen displaying all incorrect answers
-  - Practice mode: select answers, submit to reveal correct ones
-  - Retry practice or restart game options
 - Game over display: dual overlays on each player's board (winner/loser messages)
-- Responsive math overlay: shrinks on small screens (<600px) to avoid blocking opponent's board
 - Button visual feedback: touch buttons now light up red for touch and keyboard controls (not just mouse)
+
+### Answer Overlay Positioning
+- Math overlay positioned completely outside the game board (right:100%/left:100%)
+- Player A's overlay appears to the left of their board
+- Player B's overlay appears to the right of their board
+- Responsive sizing for smaller screens (700px, 500px breakpoints)
+
+### Answer Feedback Animation
+- Correct answer: shows cyan checkmark (✓) with pop animation
+- Wrong answer: shows red X (✗) with pop animation
+- 600ms delay before continuing to next question
+
+### Review System (答题复盘)
+- Split into left/right columns (Player A on left, Player B on right)
+- Each player has independent submit button
+- 50% pass threshold:
+  - If correct >= 50%: answers revealed, shows "通过！答案已公布"
+  - If correct < 50%: answers hidden, must retry, shows "错误超过50%，请重新作答"
+- "重新对决" button appears only when both players have passed OR both have failed

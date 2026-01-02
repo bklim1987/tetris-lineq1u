@@ -71,3 +71,23 @@ python -m http.server 5000 --bind 0.0.0.0
 ### Music Playlist
 - Playlist is shuffled at game start (random first song)
 - Songs continue in sequence, looping through the playlist
+
+### Smart Distractor System (2026-01-02)
+Math problem options are now designed to capture common student misconceptions:
+
+**Type 1: x ± a = b**
+- Correct: x = b ∓ a
+- Distractors: b-a (forgot sign change), -x (sign error), a-b (wrong order)
+
+**Type 2: ax ± b = c**
+- Correct: x = (c ∓ b) / a
+- Distractors: (c+b)/a (forgot sign change), c-b (forgot divide), -x (sign error)
+
+**Type 3: a(x ± b) = c**
+- Correct: x = c/a ∓ b
+- Distractors: c/a (forgot subtract b), c/a+b (wrong direction), -x (sign error)
+
+**Type 4: Complex equations**
+- Uses -x, x+1, x-1 as fallback distractors for very complex equations
+
+This approach helps teachers identify specific misconceptions when students choose wrong answers.

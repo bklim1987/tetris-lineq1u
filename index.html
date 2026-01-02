@@ -991,24 +991,86 @@
 
         class MathEngine {
             static generateByLines(lines) {
-                let a, b, c, d, f, x, eq;
+                let a, b, c, d, f, x, eq, distractors;
                 while (true) {x = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1); if (x !== 0) break;}
                 if (lines === 1) {
                     while (true) {a = (Math.floor(Math.random() * 15) + 1) * (Math.random() > 0.5 ? 1 : -1); b = x + a; if (a !== 0 && b !== 0) break;}
                     eq = `x ${a >= 0 ? '+' : '-'} ${Math.abs(a)} = ${b}`;
+                    distractors = this.getDistractorsType1(x, a, b);
                 } else if (lines === 2) {
                     while (true) {a = (Math.floor(Math.random() * 5) + 2) * (Math.random() > 0.5 ? 1 : -1); b = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1); c = a * x + b; if (a !== 0 && b !== 0 && c !== 0) break;}
                     eq = `${a}x ${b >= 0 ? '+' : '-'} ${Math.abs(b)} = ${c}`;
+                    distractors = this.getDistractorsType2(x, a, b, c);
                 } else if (lines === 3) {
                     while (true) {a = (Math.floor(Math.random() * 4) + 2) * (Math.random() > 0.5 ? 1 : -1); b = (Math.floor(Math.random() * 6) + 1) * (Math.random() > 0.5 ? 1 : -1); c = a * (x + b); if (a !== 0 && b !== 0 && c !== 0) break;}
                     eq = `${a}(x ${b >= 0 ? '+' : '-'} ${Math.abs(b)}) = ${c}`;
+                    distractors = this.getDistractorsType3(x, a, b, c);
                 } else {
                     while (true) {a = Math.floor(Math.random() * 3) + 2; b = Math.floor(Math.random() * 3) + 2; c = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1); d = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1); f = (a * b - 1) * x + a * c + d; if (a !== 0 && b !== 0 && c !== 0 && d !== 0 && f !== 0) break;}
                     const cSign = c >= 0 ? '+' : '-'; const dSign = d >= 0 ? '+' : '-'; const fSign = f >= 0 ? '+' : '-';
                     eq = `${a}(${b}x ${cSign} ${Math.abs(c)}) ${dSign} ${Math.abs(d)} = x ${fSign} ${Math.abs(f)}`;
+                    distractors = this.getDistractorsType4(x, a, b, c, d, f);
                 }
-                let options = this.shuffle([x, x + 1, x - 1, x + 2]); return {equation: eq, answer: x, options};
+                let options = this.buildOptions(x, distractors);
+                return {equation: eq, answer: x, options};
             }
+
+            static getDistractorsType1(x, a, b) {
+                const candidates = [
+                    b - a,
+                    -x,
+                    a - b
+                ];
+                return candidates;
+            }
+
+            static getDistractorsType2(x, a, b, c) {
+                const signedB = b;
+                const candidates = [
+                    (c + signedB) / a,
+                    (c - signedB),
+                    -x
+                ];
+                return candidates;
+            }
+
+            static getDistractorsType3(x, a, b, c) {
+                const signedB = b;
+                const candidates = [
+                    c / a,
+                    c / a + signedB,
+                    -x
+                ];
+                return candidates;
+            }
+
+            static getDistractorsType4(x, a, b, c, d, f) {
+                const candidates = [
+                    -x,
+                    x + 1,
+                    x - 1
+                ];
+                return candidates;
+            }
+
+            static buildOptions(correctAnswer, distractors) {
+                let options = [correctAnswer];
+                let filtered = distractors
+                    .filter(d => Number.isFinite(d) && Number.isInteger(d) && d !== correctAnswer)
+                    .filter((d, i, arr) => arr.indexOf(d) === i);
+                for (let d of filtered) {
+                    if (options.length >= 4) break;
+                    if (!options.includes(d)) options.push(d);
+                }
+                let fallback = 1;
+                while (options.length < 4) {
+                    const candidate = correctAnswer + fallback;
+                    if (!options.includes(candidate)) options.push(candidate);
+                    fallback = fallback > 0 ? -fallback : -fallback + 1;
+                }
+                return this.shuffle(options.slice(0, 4));
+            }
+
             static shuffle(arr) {return arr.sort(() => Math.random() - 0.5);}
         }
 

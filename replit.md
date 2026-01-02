@@ -103,5 +103,31 @@ A standalone practice mode for learning equation solving:
   - Correct answers show cyan checkmark (✓)
   - Wrong answers show red X (✗)
   - Wrong answers reveal detailed step-by-step solution
-- Solution steps explain the solving process with clear instructions
 - Buttons: "再次练习" (practice again) or "返回主页" (return to home)
+
+**Solution Step Format (Updated):**
+Solutions show the algebraic principle of "performing the same operation on both sides":
+
+- Type 1 (x ± a = b):
+  1. 原式：x + a = b
+  2. 等号左右各减去 a
+  3. x + a - a = b - a
+  4. x = [answer]
+
+- Type 2 (ax ± b = c):
+  1. 原式：ax + b = c
+  2. 等号左右各减去 b
+  3. ax + b - b = c - b
+  4. ax = [result]
+  5. 等号左右各除以 a
+  6. ax ÷ a = [result] ÷ a
+  7. x = [answer]
+
+- Type 3 (a(x ± b) = c):
+  1. 原式：a(x + b) = c
+  2. 等号左右各除以 a
+  3. a(x + b) ÷ a = c ÷ a
+  4. x + b = [result]
+  5. 等号左右各减去 b
+  6. x + b - b = [result] - b
+  7. x = [answer]

@@ -1017,7 +1017,7 @@
 
             static getDistractorsType1(x, a, b) {
                 const candidates = [
-                    b - a,
+                    b + a,
                     -x,
                     a - b
                 ];
@@ -1025,20 +1025,18 @@
             }
 
             static getDistractorsType2(x, a, b, c) {
-                const signedB = b;
                 const candidates = [
-                    (c + signedB) / a,
-                    (c - signedB),
+                    (c + b) / a,
+                    c - b,
                     -x
                 ];
                 return candidates;
             }
 
             static getDistractorsType3(x, a, b, c) {
-                const signedB = b;
                 const candidates = [
                     c / a,
-                    c / a + signedB,
+                    c / a + b,
                     -x
                 ];
                 return candidates;

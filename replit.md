@@ -1,4 +1,4 @@
-# Tetris Math Game (一元一次俄羅斯)
+# Tetris Math Game (一元一次俄罗斯)
 
 ## Overview
 A two-player Tetris-style game with math equation challenges built in pure HTML/CSS/JavaScript. Players compete against each other, and clearing lines triggers math problems for the opponent.

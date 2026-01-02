@@ -56,3 +56,13 @@ python -m http.server 5000 --bind 0.0.0.0
   - If correct >= 50%: answers revealed, shows "通过！答案已公布"
   - If correct < 50%: answers hidden, must retry, shows "错误超过50%，请重新作答"
 - "重新对决" button appears only when both players have passed OR both have failed
+
+### Audio Controls
+- Music button: toggles background music on/off (initial state: on)
+- Sound effects button: toggles game sound effects on/off (initial state: on)
+- Volume slider: adjusts volume for both music and sound effects
+
+### Game Over Effects
+- Music switches to a new random track when game ends
+- Winner's board displays celebration confetti animation
+- Winner overlay has pulsing green glow effect

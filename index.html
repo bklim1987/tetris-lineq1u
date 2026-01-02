@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>一元一次俄罗斯(东兴ㄚ杰)</title>
+    <title>一元一次俄罗斯</title>
     <style>
         :root {
             --bg-color: #1a1a2e;
@@ -34,7 +35,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             z-index: 1001;
             height: 50px;
             box-sizing: border-box;
@@ -77,21 +78,32 @@
             user-select: none;
         }
 
-        .btn-fullscreen { background: #6c757d; }
-        .btn-help { background: #007bff; }
-        .btn-start { 
-            background: #28a745; 
+        .btn-fullscreen {
+            background: #6c757d;
+        }
+
+        .btn-help {
+            background: #007bff;
+        }
+
+        .btn-start {
+            background: #28a745;
             padding: 8px 25px;
             font-size: 16px;
             box-shadow: 0 0 15px rgba(40, 167, 69, 0.6);
             white-space: nowrap;
         }
+
         .btn-restart {
             background: #f39c12;
             padding: 8px 20px;
-            display: none; 
+            display: none;
         }
-        .btn-audio { background: #533483; min-width: 70px; }
+
+        .btn-audio {
+            background: #533483;
+            min-width: 70px;
+        }
 
         /* 游戏主容器 */
         #game-container {
@@ -108,7 +120,7 @@
 
         .player-section {
             display: flex;
-            flex-direction: row; 
+            flex-direction: row;
             align-items: center;
             justify-content: center;
             width: 50%;
@@ -136,7 +148,7 @@
             background: #000;
             border: 1px solid #333;
             height: auto;
-            max-height: 60vh; 
+            max-height: 60vh;
         }
 
         .side-panel {
@@ -154,14 +166,22 @@
             text-align: center;
         }
 
-        .info-label { font-size: 10px; color: #ccc; }
-        .info-value { font-size: 14px; font-weight: bold; color: #00d4ff; }
+        .info-label {
+            font-size: 10px;
+            color: #ccc;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #00d4ff;
+        }
 
         /* 集中式控制按钮区 */
         .touch-controls {
-            display: none; 
-            grid-template-columns: repeat(2, 75px); 
-            grid-template-rows: 70px 70px 70px;    
+            display: none;
+            grid-template-columns: repeat(2, 75px);
+            grid-template-rows: 70px 70px 70px;
             gap: 4px;
             padding: 10px;
             background: rgba(255, 255, 255, 0.05);
@@ -187,10 +207,34 @@
             transform: scale(0.95);
         }
 
-        .t-btn.up { grid-column: span 2; grid-row: 1; font-size: 18px; font-weight: bold; color: #00ffcc; }
-        .t-btn.left { grid-column: 1; grid-row: 2; border-right-width: 1px; border-top-right-radius: 0; border-bottom-right-radius: 0; }
-        .t-btn.right { grid-column: 2; grid-row: 2; border-left-width: 1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
-        .t-btn.down { grid-column: span 2; grid-row: 3; }
+        .t-btn.up {
+            grid-column: span 2;
+            grid-row: 1;
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ffcc;
+        }
+
+        .t-btn.left {
+            grid-column: 1;
+            grid-row: 2;
+            border-right-width: 1px;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .t-btn.right {
+            grid-column: 2;
+            grid-row: 2;
+            border-left-width: 1px;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .t-btn.down {
+            grid-column: span 2;
+            grid-row: 3;
+        }
 
         /* 方程式解题区 - 扩大小窗口并固定单行呈现 */
         .math-overlay {
@@ -198,28 +242,28 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 320px; 
+            width: 320px;
             background: rgba(10, 30, 60, 0.98);
             border: 4px solid var(--text-color);
             border-radius: 15px;
             padding: 20px 10px;
             text-align: center;
-            display: none; 
+            display: none;
             z-index: 500;
-            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
         }
 
         .math-equation {
-            font-size: 26px; 
+            font-size: 26px;
             margin-bottom: 20px;
             color: #00ffcc;
             background: #000;
             padding: 15px 10px;
             border-radius: 8px;
             word-break: keep-all;
-            white-space: nowrap; 
+            white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; 
+            text-overflow: ellipsis;
             font-weight: bold;
             border: 1px solid #333;
         }
@@ -233,7 +277,7 @@
         .option-btn {
             padding: 15px 5px;
             background: #533483;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             color: white;
             border-radius: 12px;
             font-size: 22px;
@@ -251,9 +295,12 @@
         /* 说明窗口优化 */
         #help-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 1000; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -281,18 +328,35 @@
             font-size: 14px;
             color: #eee;
         }
-        .help-table th, .help-table td {
+
+        .help-table th,
+        .help-table td {
             border: 1px solid #333;
             padding: 12px;
             text-align: left;
         }
-        .help-table th { background: #0f3460; color: #00ffcc; font-weight: bold; }
-        .help-table ul { margin: 0; padding-left: 20px; }
-        .help-table li { margin-bottom: 5px; }
+
+        .help-table th {
+            background: #0f3460;
+            color: #00ffcc;
+            font-weight: bold;
+        }
+
+        .help-table ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .help-table li {
+            margin-bottom: 5px;
+        }
 
         #flash-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(255, 0, 0, 0.4);
             pointer-events: none;
             z-index: 2000;
@@ -302,8 +366,11 @@
 
         .global-game-over {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             flex-direction: column;
             justify-content: center;
@@ -312,9 +379,9 @@
             overflow: hidden;
         }
 
-        .win-celebration { 
-            color: #ffcc00; 
-            font-size: 50px; 
+        .win-celebration {
+            color: #ffcc00;
+            font-size: 50px;
             font-weight: 900;
             text-shadow: 0 0 30px rgba(255, 204, 0, 0.8);
             animation: winPulse 1.5s infinite;
@@ -322,9 +389,17 @@
         }
 
         @keyframes winPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .petal {
@@ -336,8 +411,15 @@
         }
 
         @keyframes fall {
-            0% { top: -10%; transform: translateX(0) rotate(0deg); }
-            100% { top: 110%; transform: translateX(100px) rotate(360deg); }
+            0% {
+                top: -10%;
+                transform: translateX(0) rotate(0deg);
+            }
+
+            100% {
+                top: 110%;
+                transform: translateX(100px) rotate(360deg);
+            }
         }
 
         .score-pop {
@@ -351,11 +433,19 @@
         }
 
         @keyframes fadeUp {
-            from { opacity: 1; transform: translate(-50%, 0); }
-            to { opacity: 0; transform: translate(-50%, -60px); }
+            from {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translate(-50%, -60px);
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div id="flash-overlay"></div>
@@ -367,13 +457,14 @@
             <button class="btn btn-audio" id="sfx-toggle" onclick="toggleSFX()">音效: 关</button>
             <div class="volume-control">
                 <span>🔊</span>
-                <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.1" value="0.5" oninput="updateVolume(this.value)">
+                <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.1" value="0.5"
+                    oninput="updateVolume(this.value)">
             </div>
         </div>
-        
+
         <div class="title-group">
             <!-- 标题修改为指定名称 -->
-            <div style="font-weight: bold; font-size: 18px;">🕹️ 一元一次俄罗斯(东兴ㄚ杰制)</div>
+            <div style="font-weight: bold; font-size: 18px;">🕹️ 一元一次俄罗斯</div>
         </div>
 
         <div>
@@ -386,10 +477,21 @@
         <!-- 玩家 A (左) -->
         <div id="player-a" class="player-section">
             <div class="touch-controls" id="touch-a">
-                <div class="t-btn up" onmousedown="touchInput(event, 'A', 'up', true)" onmouseup="touchInput(event, 'A', 'up', false)" ontouchstart="touchInput(event, 'A', 'up', true)" ontouchend="touchInput(event, 'A', 'up', false)">旋转</div>
-                <div class="t-btn left" onmousedown="touchInput(event, 'A', 'left', true)" onmouseup="touchInput(event, 'A', 'left', false)" ontouchstart="touchInput(event, 'A', 'left', true)" ontouchend="touchInput(event, 'A', 'left', false)">←</div>
-                <div class="t-btn right" onmousedown="touchInput(event, 'A', 'right', true)" onmouseup="touchInput(event, 'A', 'right', false)" ontouchstart="touchInput(event, 'A', 'right', true)" ontouchend="touchInput(event, 'A', 'right', false)">→</div>
-                <div class="t-btn down" onmousedown="touchInput(event, 'A', 'down', true)" onmouseup="touchInput(event, 'A', 'down', false)" ontouchstart="touchInput(event, 'A', 'down', true)" ontouchend="touchInput(event, 'A', 'down', false)">↓</div>
+                <div class="t-btn up" onmousedown="touchInput(event, 'A', 'up', true)"
+                    onmouseup="touchInput(event, 'A', 'up', false)" ontouchstart="touchInput(event, 'A', 'up', true)"
+                    ontouchend="touchInput(event, 'A', 'up', false)">旋转</div>
+                <div class="t-btn left" onmousedown="touchInput(event, 'A', 'left', true)"
+                    onmouseup="touchInput(event, 'A', 'left', false)"
+                    ontouchstart="touchInput(event, 'A', 'left', true)"
+                    ontouchend="touchInput(event, 'A', 'left', false)">←</div>
+                <div class="t-btn right" onmousedown="touchInput(event, 'A', 'right', true)"
+                    onmouseup="touchInput(event, 'A', 'right', false)"
+                    ontouchstart="touchInput(event, 'A', 'right', true)"
+                    ontouchend="touchInput(event, 'A', 'right', false)">→</div>
+                <div class="t-btn down" onmousedown="touchInput(event, 'A', 'down', true)"
+                    onmouseup="touchInput(event, 'A', 'down', false)"
+                    ontouchstart="touchInput(event, 'A', 'down', true)"
+                    ontouchend="touchInput(event, 'A', 'down', false)">↓</div>
             </div>
 
             <div class="board-container">
@@ -414,10 +516,21 @@
         <!-- 玩家 B (右) -->
         <div id="player-b" class="player-section">
             <div class="touch-controls" id="touch-b">
-                <div class="t-btn up" onmousedown="touchInput(event, 'B', 'up', true)" onmouseup="touchInput(event, 'B', 'up', false)" ontouchstart="touchInput(event, 'B', 'up', true)" ontouchend="touchInput(event, 'B', 'up', false)">旋转</div>
-                <div class="t-btn left" onmousedown="touchInput(event, 'B', 'left', true)" onmouseup="touchInput(event, 'B', 'left', false)" ontouchstart="touchInput(event, 'B', 'left', true)" ontouchend="touchInput(event, 'B', 'left', false)">←</div>
-                <div class="t-btn right" onmousedown="touchInput(event, 'B', 'right', true)" onmouseup="touchInput(event, 'B', 'right', false)" ontouchstart="touchInput(event, 'B', 'right', true)" ontouchend="touchInput(event, 'B', 'right', false)">→</div>
-                <div class="t-btn down" onmousedown="touchInput(event, 'B', 'down', true)" onmouseup="touchInput(event, 'B', 'down', false)" ontouchstart="touchInput(event, 'B', 'down', true)" ontouchend="touchInput(event, 'B', 'down', false)">↓</div>
+                <div class="t-btn up" onmousedown="touchInput(event, 'B', 'up', true)"
+                    onmouseup="touchInput(event, 'B', 'up', false)" ontouchstart="touchInput(event, 'B', 'up', true)"
+                    ontouchend="touchInput(event, 'B', 'up', false)">旋转</div>
+                <div class="t-btn left" onmousedown="touchInput(event, 'B', 'left', true)"
+                    onmouseup="touchInput(event, 'B', 'left', false)"
+                    ontouchstart="touchInput(event, 'B', 'left', true)"
+                    ontouchend="touchInput(event, 'B', 'left', false)">←</div>
+                <div class="t-btn right" onmousedown="touchInput(event, 'B', 'right', true)"
+                    onmouseup="touchInput(event, 'B', 'right', false)"
+                    ontouchstart="touchInput(event, 'B', 'right', true)"
+                    ontouchend="touchInput(event, 'B', 'right', false)">→</div>
+                <div class="t-btn down" onmousedown="touchInput(event, 'B', 'down', true)"
+                    onmouseup="touchInput(event, 'B', 'down', false)"
+                    ontouchstart="touchInput(event, 'B', 'down', true)"
+                    ontouchend="touchInput(event, 'B', 'down', false)">↓</div>
             </div>
 
             <div class="board-container">
@@ -443,33 +556,69 @@
     <!-- 结算画面 (仅在游戏结束时显示) -->
     <div id="global-over" class="global-game-over">
         <div id="win-msg" class="win-celebration">🏆 恭喜 玩家 获得最终胜利！ 🏆</div>
-        <button class="btn btn-help" style="margin-top:40px; padding: 15px 40px; font-size: 20px; color: white; position: relative; z-index: 2120;" onclick="location.reload()" ontouchstart="location.reload()">重新对决</button>
+        <button class="btn btn-help"
+            style="margin-top:40px; padding: 15px 40px; font-size: 20px; color: white; position: relative; z-index: 2120;"
+            onclick="location.reload()" ontouchstart="location.reload()">重新对决</button>
     </div>
 
     <div id="help-overlay">
         <div class="help-content">
             <!-- 标题修改为指定名称 -->
-            <h2 style="text-align: center; color: var(--text-color);">一元一次俄罗斯(东兴ㄚ杰制)</h2>
-            
+            <h2 style="text-align: center; color: var(--text-color);">一元一次俄罗斯</h2>
+
             <table class="help-table">
                 <thead>
-                    <tr><th>功能</th><th>键盘玩家 A/B</th><th>PS/2 摇杆</th><th>平板触控</th></tr>
+                    <tr>
+                        <th>功能</th>
+                        <th>键盘玩家 A/B</th>
+                        <th>PS/2 摇杆</th>
+                        <th>平板触控</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    <tr><td>左右移动</td><td>A,D / ←,→</td><td>十字键 左右</td><td>中间并排按钮</td></tr>
-                    <tr><td>加速下落</td><td>S / ↓</td><td>左摇杆 下</td><td>最下方按钮</td></tr>
-                    <tr><td>旋转方块</td><td>W / ↑</td><td>按钮 2 (B)</td><td>最上方按钮</td></tr>
-                    <tr><td>答题选择</td><td>WASD / 方向键</td><td>十字键</td><td><strong>直接点选选项</strong></td></tr>
-                    <tr><td>答题确认</td><td>Q / Enter</td><td>按钮 1 (A)</td><td>无需按钮</td></tr>
-                    <tr><th colspan="4" style="text-align:center; background:#16213e; color:#00ffcc;">游戏规则与重点</th></tr>
-                    <tr><td colspan="4">
-                        <ul>
-                            <li>消除行数即可发动攻击，对手需答对方程式方可恢复操作。</li>
-                            <li>包含 "B" 字的小格被消除后会产生炸弹，落地立即引爆 5x5 范围。</li>
-                            <li><strong>败战判定：</strong> 1. 新方块产生时位置被占据。 2. 被垃圾行推挤导致方块溢出顶部。</li>
-                            <li>所有题目之系数、常数与答案均保证不为 0。</li>
-                        </ul>
-                    </td></tr>
+                    <tr>
+                        <td>左右移动</td>
+                        <td>A,D / ←,→</td>
+                        <td>十字键 左右</td>
+                        <td>中间并排按钮</td>
+                    </tr>
+                    <tr>
+                        <td>加速下落</td>
+                        <td>S / ↓</td>
+                        <td>左摇杆 下</td>
+                        <td>最下方按钮</td>
+                    </tr>
+                    <tr>
+                        <td>旋转方块</td>
+                        <td>W / ↑</td>
+                        <td>按钮 2 (B)</td>
+                        <td>最上方按钮</td>
+                    </tr>
+                    <tr>
+                        <td>答题选择</td>
+                        <td>WASD / 方向键</td>
+                        <td>十字键</td>
+                        <td><strong>直接点选选项</strong></td>
+                    </tr>
+                    <tr>
+                        <td>答题确认</td>
+                        <td>Q / Enter</td>
+                        <td>按钮 1 (A)</td>
+                        <td>无需按钮</td>
+                    </tr>
+                    <tr>
+                        <th colspan="4" style="text-align:center; background:#16213e; color:#00ffcc;">游戏规则与重点</th>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <ul>
+                                <li>消除行数即可发动攻击，对手需答对方程式方可恢复操作。</li>
+                                <li>包含 "B" 字的小格被消除后会产生炸弹，落地立即引爆 5x5 范围。</li>
+                                <li><strong>败战判定：</strong> 1. 新方块产生时位置被占据。 2. 被垃圾行推挤导致方块溢出顶部。</li>
+                                <li>所有题目之系数、常数与答案均保证不为 0。</li>
+                            </ul>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             <p style="text-align: center; color: #ffcc00; font-weight: bold;">请点击右上角「开始战斗」启动游戏</p>
@@ -477,7 +626,7 @@
     </div>
 
     <script>
-        const COLS = 10, ROWS = 20, BLOCK_SIZE = 20; 
+        const COLS = 10, ROWS = 20, BLOCK_SIZE = 20;
         const COLORS = [null, '#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF', '#777', null, '#FFD700', '#FF4500'];
         const SHAPES = [[], [[0, 1, 0], [1, 1, 1], [0, 0, 0]], [[0, 2, 0, 0], [0, 2, 0, 0], [0, 2, 0, 0], [0, 2, 0, 0]], [[0, 3, 3], [3, 3, 0], [0, 0, 0]], [[4, 4, 0], [0, 4, 4], [0, 0, 0]], [[5, 0, 0], [5, 5, 5], [0, 0, 0]], [[0, 0, 6], [6, 6, 6], [0, 0, 0]], [[7, 7], [7, 7]]];
 
@@ -486,19 +635,19 @@
         const SFX_FILE = 'stonefall.mp3';
         let currentBgmIndex = 0, audioEnabled = true, sfxEnabled = true, currentVolume = 0.5;
         let bgmPlayer = new Audio(), sfxPlayer = new Audio();
-        
-        function updateVolume(val) { currentVolume = parseFloat(val); bgmPlayer.volume = currentVolume; sfxPlayer.volume = currentVolume; }
-        function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else if (document.exitFullscreen) document.exitFullscreen(); }
-        function playStonefall() { if (sfxEnabled) { sfxPlayer.src = SFX_FILE; sfxPlayer.volume = currentVolume; sfxPlayer.play().catch(() => {}); } }
+
+        function updateVolume(val) {currentVolume = parseFloat(val); bgmPlayer.volume = currentVolume; sfxPlayer.volume = currentVolume;}
+        function toggleFullScreen() {if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else if (document.exitFullscreen) document.exitFullscreen();}
+        function playStonefall() {if (sfxEnabled) {sfxPlayer.src = SFX_FILE; sfxPlayer.volume = currentVolume; sfxPlayer.play().catch(() => { });} }
         async function flashScreen() {
             const overlay = document.getElementById('flash-overlay'); playStonefall();
-            for (let i = 0; i < 3; i++) { overlay.style.opacity = '1'; await new Promise(r => setTimeout(r, 80)); overlay.style.opacity = '0'; await new Promise(r => setTimeout(r, 80)); }
+            for (let i = 0; i < 3; i++) {overlay.style.opacity = '1'; await new Promise(r => setTimeout(r, 80)); overlay.style.opacity = '0'; await new Promise(r => setTimeout(r, 80));}
         }
-        function toggleMusic() { audioEnabled = !audioEnabled; document.getElementById('bgm-toggle').innerText = `音乐: ${audioEnabled ? '开' : '关'}`; if (audioEnabled) playNextBgm(); else bgmPlayer.pause(); }
-        function toggleSFX() { sfxEnabled = !sfxEnabled; document.getElementById('sfx-toggle').innerText = `音效: ${sfxEnabled ? '开' : '关'}`; }
+        function toggleMusic() {audioEnabled = !audioEnabled; document.getElementById('bgm-toggle').innerText = `音乐: ${audioEnabled ? '开' : '关'}`; if (audioEnabled) playNextBgm(); else bgmPlayer.pause();}
+        function toggleSFX() {sfxEnabled = !sfxEnabled; document.getElementById('sfx-toggle').innerText = `音效: ${sfxEnabled ? '开' : '关'}`;}
         function playNextBgm() {
             if (!audioEnabled) return; bgmPlayer.src = BGM_FILES[currentBgmIndex]; bgmPlayer.volume = currentVolume;
-            bgmPlayer.play().catch(() => { currentBgmIndex = (currentBgmIndex + 1) % BGM_FILES.length; playNextBgm(); });
+            bgmPlayer.play().catch(() => {currentBgmIndex = (currentBgmIndex + 1) % BGM_FILES.length; playNextBgm();});
             currentBgmIndex = (currentBgmIndex + 1) % BGM_FILES.length;
         }
         bgmPlayer.onended = playNextBgm;
@@ -506,24 +655,24 @@
         class MathEngine {
             static generateByLines(lines) {
                 let a, b, c, d, f, x, eq;
-                while (true) { x = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1); if (x !== 0) break; }
+                while (true) {x = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1); if (x !== 0) break;}
                 if (lines === 1) {
-                    while (true) { a = (Math.floor(Math.random() * 15) + 1) * (Math.random() > 0.5 ? 1 : -1); b = x + a; if (a !== 0 && b !== 0) break; }
+                    while (true) {a = (Math.floor(Math.random() * 15) + 1) * (Math.random() > 0.5 ? 1 : -1); b = x + a; if (a !== 0 && b !== 0) break;}
                     eq = `x ${a >= 0 ? '+' : '-'} ${Math.abs(a)} = ${b}`;
                 } else if (lines === 2) {
-                    while (true) { a = (Math.floor(Math.random() * 5) + 2) * (Math.random() > 0.5 ? 1 : -1); b = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1); c = a * x + b; if (a !== 0 && b !== 0 && c !== 0) break; }
+                    while (true) {a = (Math.floor(Math.random() * 5) + 2) * (Math.random() > 0.5 ? 1 : -1); b = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1); c = a * x + b; if (a !== 0 && b !== 0 && c !== 0) break;}
                     eq = `${a}x ${b >= 0 ? '+' : '-'} ${Math.abs(b)} = ${c}`;
                 } else if (lines === 3) {
-                    while (true) { a = (Math.floor(Math.random() * 4) + 2) * (Math.random() > 0.5 ? 1 : -1); b = (Math.floor(Math.random() * 6) + 1) * (Math.random() > 0.5 ? 1 : -1); c = a * (x + b); if (a !== 0 && b !== 0 && c !== 0) break; }
+                    while (true) {a = (Math.floor(Math.random() * 4) + 2) * (Math.random() > 0.5 ? 1 : -1); b = (Math.floor(Math.random() * 6) + 1) * (Math.random() > 0.5 ? 1 : -1); c = a * (x + b); if (a !== 0 && b !== 0 && c !== 0) break;}
                     eq = `${a}(x ${b >= 0 ? '+' : '-'} ${Math.abs(b)}) = ${c}`;
                 } else {
-                    while (true) { a = Math.floor(Math.random() * 3) + 2; b = Math.floor(Math.random() * 3) + 2; c = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1); d = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1); f = (a * b - 1) * x + a * c + d; if (a !== 0 && b !== 0 && c !== 0 && d !== 0 && f !== 0) break; }
+                    while (true) {a = Math.floor(Math.random() * 3) + 2; b = Math.floor(Math.random() * 3) + 2; c = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1); d = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1); f = (a * b - 1) * x + a * c + d; if (a !== 0 && b !== 0 && c !== 0 && d !== 0 && f !== 0) break;}
                     const cSign = c >= 0 ? '+' : '-'; const dSign = d >= 0 ? '+' : '-'; const fSign = f >= 0 ? '+' : '-';
                     eq = `${a}(${b}x ${cSign} ${Math.abs(c)}) ${dSign} ${Math.abs(d)} = x ${fSign} ${Math.abs(f)}`;
                 }
-                let options = this.shuffle([x, x+1, x-1, x+2]); return { equation: eq, answer: x, options };
+                let options = this.shuffle([x, x + 1, x - 1, x + 2]); return {equation: eq, answer: x, options};
             }
-            static shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+            static shuffle(arr) {return arr.sort(() => Math.random() - 0.5);}
         }
 
         class Player {
@@ -531,18 +680,18 @@
                 this.id = id; this.canvas = document.getElementById(canvasId); this.ctx = this.canvas.getContext('2d');
                 this.nextCanvas = document.getElementById(nextId); this.nextCtx = this.nextCanvas.getContext('2d');
                 this.scoreElement = document.getElementById(scoreId); this.mathUI = document.getElementById(mathId);
-                this.board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-                this.score = 0; this.pos = { x: 0, y: 0 }; this.matrix = null; this.nextMatrix = null;
-                this.isBombActive = false; this.bombIsNext = false; 
+                this.board = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+                this.score = 0; this.pos = {x: 0, y: 0}; this.matrix = null; this.nextMatrix = null;
+                this.isBombActive = false; this.bombIsNext = false;
                 this.keyboardLeft = this.keyboardRight = this.keyboardDown = false;
                 this.gamepadLeft = this.gamepadRight = this.gamepadDown = false;
                 this.touchLeft = this.touchRight = this.touchDown = false;
-                this.waitReleaseDown = false; 
-                this.moveCounter = 0; this.moveInterval = 100; this.dasDelay = 200; this.moveLocked = false; 
-                this.keys = { left: false, right: false }; 
+                this.waitReleaseDown = false;
+                this.moveCounter = 0; this.moveInterval = 100; this.dasDelay = 200; this.moveLocked = false;
+                this.keys = {left: false, right: false};
                 this.dropCounter = 0; this.dropInterval = 1000;
                 this.isSolving = false; this.currentProblem = null; this.selectedIndex = 0;
-                this.lastGamepadState = { left: false, right: false, up: false, down: false, btn0: false, btn1: false };
+                this.lastGamepadState = {left: false, right: false, up: false, down: false, btn0: false, btn1: false};
                 this.setNextPiece(); this.resetPiece();
             }
 
@@ -550,22 +699,22 @@
                 const type = (Math.random() * 7 | 0) + 1;
                 let matrix = SHAPES[type].map(row => [...row]);
                 if (Math.random() < 0.2) {
-                    let blocks = []; matrix.forEach((row, y) => row.forEach((v, x) => { if (v) blocks.push({x, y}); }));
-                    if (blocks.length > 0) { const target = blocks[Math.floor(Math.random() * blocks.length)]; matrix[target.y][target.x] = 10; }
+                    let blocks = []; matrix.forEach((row, y) => row.forEach((v, x) => {if (v) blocks.push({x, y});}));
+                    if (blocks.length > 0) {const target = blocks[Math.floor(Math.random() * blocks.length)]; matrix[target.y][target.x] = 10;}
                 }
                 this.nextMatrix = matrix;
             }
 
             resetPiece() {
-                if (this.bombIsNext) { this.matrix = [[11]]; this.isBombActive = true; this.bombIsNext = false; }
-                else { this.matrix = this.nextMatrix; this.isBombActive = false; this.setNextPiece(); }
+                if (this.bombIsNext) {this.matrix = [[11]]; this.isBombActive = true; this.bombIsNext = false;}
+                else {this.matrix = this.nextMatrix; this.isBombActive = false; this.setNextPiece();}
                 this.pos.y = 0; this.pos.x = (COLS / 2 | 0) - (this.matrix[0].length / 2 | 0);
-                this.waitReleaseDown = true; 
-                if (this.collide()) endGame(this.id); 
+                this.waitReleaseDown = true;
+                if (this.collide()) endGame(this.id);
                 this.drawNext();
             }
 
-            collide(offset = { x: 0, y: 0 }) {
+            collide(offset = {x: 0, y: 0}) {
                 const m = this.matrix; const p = this.pos;
                 for (let y = 0; y < m.length; ++y) {
                     for (let x = 0; x < m[y].length; ++x) {
@@ -584,8 +733,8 @@
                 this.pos.y++;
                 if (this.collide()) {
                     this.pos.y--;
-                    if (this.isBombActive) { this.explode(); this.resetPiece(); }
-                    else { this.join(); this.sweep(); this.resetPiece(); }
+                    if (this.isBombActive) {this.explode(); this.resetPiece();}
+                    else {this.join(); this.sweep(); this.resetPiece();}
                 }
                 this.dropCounter = 0;
             }
@@ -602,8 +751,8 @@
 
             move(dir) {
                 if (isGameOver || isPaused) return;
-                if (this.isSolving) { this.selectMathOption(dir, 0); return; }
-                this.pos.x += dir; if (this.collide()) { this.pos.x -= dir; return false; } return true;
+                if (this.isSolving) {this.selectMathOption(dir, 0); return;}
+                this.pos.x += dir; if (this.collide()) {this.pos.x -= dir; return false;} return true;
             }
 
             rotate() {
@@ -617,12 +766,12 @@
                 }
             }
 
-            join() { this.matrix.forEach((row, y) => { row.forEach((value, x) => { if (value !== 0) { const newY = y + this.pos.y; if (newY >= 0) this.board[newY][x + this.pos.x] = value; } }); }); }
+            join() {this.matrix.forEach((row, y) => {row.forEach((value, x) => {if (value !== 0) {const newY = y + this.pos.y; if (newY >= 0) this.board[newY][x + this.pos.x] = value;} });});}
 
             sweep() {
                 let rowCount = 0, hasSpecial = false;
                 outer: for (let y = ROWS - 1; y >= 0; --y) {
-                    let full = true; for (let x = 0; x < COLS; ++x) if (this.board[y][x] === 0) { full = false; break; }
+                    let full = true; for (let x = 0; x < COLS; ++x) if (this.board[y][x] === 0) {full = false; break;}
                     if (!full) continue outer;
                     for (let x = 0; x < COLS; ++x) if (this.board[y][x] === 10) hasSpecial = true;
                     this.board.splice(y, 1); this.board.unshift(Array(COLS).fill(0));
@@ -633,7 +782,7 @@
                     this.score += add; this.scoreElement.innerText = this.score; this.showPopScore(add);
                     const opponent = (this.id === 'A') ? playerB : playerA;
                     opponent.receiveAttack(rowCount); opponent.triggerMath(rowCount);
-                    flashScreen(); if (hasSpecial) this.bombIsNext = true; 
+                    flashScreen(); if (hasSpecial) this.bombIsNext = true;
                 }
             }
 
@@ -645,13 +794,13 @@
                     this.board.push(row);
                     if (topRowOccupied || this.collide()) {
                         endGame(this.id);
-                        return; 
+                        return;
                     }
                 }
             }
 
             triggerMath(lines) {
-                if (lines < 1) return; 
+                if (lines < 1) return;
                 this.isSolving = true; this.currentProblem = MathEngine.generateByLines(lines); this.selectedIndex = 0;
                 this.mathUI.style.display = 'block'; this.renderMath();
             }
@@ -661,7 +810,7 @@
                 eqDiv.innerText = this.currentProblem.equation; optDiv.innerHTML = '';
                 this.currentProblem.options.forEach((opt, i) => {
                     const btn = document.createElement('div'); btn.className = `option-btn ${i === this.selectedIndex ? 'selected' : ''}`; btn.innerText = opt;
-                    btn.onclick = () => { this.selectedIndex = i; this.confirmAnswer(); };
+                    btn.onclick = () => {this.selectedIndex = i; this.confirmAnswer();};
                     optDiv.appendChild(btn);
                 });
             }
@@ -669,7 +818,7 @@
             selectMathOption(dirX, dirY) {
                 if (!this.isSolving) return;
                 let newIndex = this.selectedIndex;
-                if (dirX !== 0) { const row = Math.floor(newIndex / 2); newIndex = row * 2 + (newIndex % 2 + dirX + 2) % 2; }
+                if (dirX !== 0) {const row = Math.floor(newIndex / 2); newIndex = row * 2 + (newIndex % 2 + dirX + 2) % 2;}
                 if (dirY !== 0) newIndex = (newIndex + dirY * 2 + 4) % 4;
                 this.selectedIndex = newIndex; this.renderMath();
             }
@@ -679,7 +828,7 @@
                 if (this.currentProblem.options[this.selectedIndex] === this.currentProblem.answer) {
                     this.isSolving = false;
                     this.mathUI.style.display = 'none';
-                } else { this.receiveAttack(1); this.currentProblem = MathEngine.generateByLines(1); this.renderMath(); }
+                } else {this.receiveAttack(1); this.currentProblem = MathEngine.generateByLines(1); this.renderMath();}
             }
 
             showPopScore(val) {
@@ -689,24 +838,26 @@
 
             draw() {
                 this.ctx.fillStyle = '#000'; this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                this.drawMatrix(this.board, { x: 0, y: 0 }); this.drawMatrix(this.matrix, this.pos);
-                if (this.isSolving) { this.ctx.fillStyle = 'rgba(255, 0, 0, 0.2)'; this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height); }
+                this.drawMatrix(this.board, {x: 0, y: 0}); this.drawMatrix(this.matrix, this.pos);
+                if (this.isSolving) {this.ctx.fillStyle = 'rgba(255, 0, 0, 0.2)'; this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);}
             }
 
             drawMatrix(matrix, offset) {
-                matrix.forEach((row, y) => { row.forEach((value, x) => {
-                    if (value !== 0) {
-                        const px = (x + offset.x) * BLOCK_SIZE, py = (y + offset.y) * BLOCK_SIZE;
-                        if (value === 11) { this.ctx.fillStyle = COLORS[11]; this.ctx.beginPath(); this.ctx.arc(px + BLOCK_SIZE/2, py + BLOCK_SIZE/2, BLOCK_SIZE/2 - 1, 0, Math.PI*2); this.ctx.fill(); this.ctx.strokeStyle = '#fff'; this.ctx.stroke(); }
-                        else { this.ctx.fillStyle = COLORS[value]; this.ctx.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE); this.ctx.strokeStyle = '#111'; this.ctx.strokeRect(px, py, BLOCK_SIZE, BLOCK_SIZE); if (value === 10) { this.ctx.fillStyle = '#000'; this.ctx.font = 'bold 12px Segoe UI'; this.ctx.textAlign = 'center'; this.ctx.fillText('B', px + BLOCK_SIZE/2, py + BLOCK_SIZE - 5); } }
-                    }
-                }); });
+                matrix.forEach((row, y) => {
+                    row.forEach((value, x) => {
+                        if (value !== 0) {
+                            const px = (x + offset.x) * BLOCK_SIZE, py = (y + offset.y) * BLOCK_SIZE;
+                            if (value === 11) {this.ctx.fillStyle = COLORS[11]; this.ctx.beginPath(); this.ctx.arc(px + BLOCK_SIZE / 2, py + BLOCK_SIZE / 2, BLOCK_SIZE / 2 - 1, 0, Math.PI * 2); this.ctx.fill(); this.ctx.strokeStyle = '#fff'; this.ctx.stroke();}
+                            else {this.ctx.fillStyle = COLORS[value]; this.ctx.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE); this.ctx.strokeStyle = '#111'; this.ctx.strokeRect(px, py, BLOCK_SIZE, BLOCK_SIZE); if (value === 10) {this.ctx.fillStyle = '#000'; this.ctx.font = 'bold 12px Segoe UI'; this.ctx.textAlign = 'center'; this.ctx.fillText('B', px + BLOCK_SIZE / 2, py + BLOCK_SIZE - 5);} }
+                        }
+                    });
+                });
             }
 
             drawNext() {
                 this.nextCtx.fillStyle = '#0f3460'; this.nextCtx.fillRect(0, 0, 50, 50);
                 const m = this.bombIsNext ? [[11]] : this.nextMatrix, s = 10;
-                m.forEach((row, y) => { row.forEach((v, x) => { if (v) { this.nextCtx.fillStyle = COLORS[v]; if (v === 11) { this.nextCtx.beginPath(); this.nextCtx.arc(10+x*s+s/2, 10+y*s+s/2, s/2, 0, Math.PI*2); this.nextCtx.fill(); } else { this.nextCtx.fillRect(10+x*s, 10+y*s, s, s); } } }); });
+                m.forEach((row, y) => {row.forEach((v, x) => {if (v) {this.nextCtx.fillStyle = COLORS[v]; if (v === 11) {this.nextCtx.beginPath(); this.nextCtx.arc(10 + x * s + s / 2, 10 + y * s + s / 2, s / 2, 0, Math.PI * 2); this.nextCtx.fill();} else {this.nextCtx.fillRect(10 + x * s, 10 + y * s, s, s);} } });});
             }
 
             updateMovement(dt) {
@@ -714,8 +865,8 @@
                 const left = this.keyboardLeft || this.gamepadLeft || this.touchLeft, right = this.keyboardRight || this.gamepadRight || this.touchRight;
                 let moveDir = 0; if (left) moveDir = -1; else if (right) moveDir = 1;
                 if (moveDir !== 0) {
-                    if (!this.moveLocked) { this.move(moveDir); this.moveLocked = true; this.moveCounter = 0; }
-                    else { this.moveCounter += dt; if (this.moveCounter > this.dasDelay) { if (this.moveCounter - this.dasDelay > this.moveInterval) { this.move(moveDir); this.moveCounter = this.dasDelay; } } }
+                    if (!this.moveLocked) {this.move(moveDir); this.moveLocked = true; this.moveCounter = 0;}
+                    else {this.moveCounter += dt; if (this.moveCounter > this.dasDelay) {if (this.moveCounter - this.dasDelay > this.moveInterval) {this.move(moveDir); this.moveCounter = this.dasDelay;} } }
                 } else this.moveLocked = false;
             }
         }
@@ -723,10 +874,10 @@
         const playerA = new Player('A', 'canvas-a', 'next-a', 'score-a', 'math-a'), playerB = new Player('B', 'canvas-b', 'next-b', 'score-b', 'math-b');
 
         function touchInput(e, pID, action, isPressed) {
-            if (e) e.preventDefault(); 
+            if (e) e.preventDefault();
             const p = (pID === 'A') ? playerA : playerB;
-            if (action === 'left') { if (p.isSolving && isPressed) p.selectMathOption(-1, 0); else p.touchLeft = isPressed; }
-            if (action === 'right') { if (p.isSolving && isPressed) p.selectMathOption(1, 0); else p.touchRight = isPressed; }
+            if (action === 'left') {if (p.isSolving && isPressed) p.selectMathOption(-1, 0); else p.touchLeft = isPressed;}
+            if (action === 'right') {if (p.isSolving && isPressed) p.selectMathOption(1, 0); else p.touchRight = isPressed;}
             if (action === 'down') p.touchDown = isPressed;
             if (action === 'up' && isPressed) {
                 if (p.isSolving) p.selectMathOption(0, -1);
@@ -738,16 +889,16 @@
         window.addEventListener('keydown', e => {
             if (isPaused || isGameOver) return;
             const code = e.code;
-            if (code === 'KeyA') { if (playerA.isSolving) playerA.selectMathOption(-1, 0); else playerA.keyboardLeft = true; }
-            if (code === 'KeyD') { if (playerA.isSolving) playerA.selectMathOption(1, 0); else playerA.keyboardRight = true; }
-            if (code === 'KeyS') { if (playerA.isSolving) playerA.selectMathOption(0, 1); else playerA.keyboardDown = true; }
-            if (code === 'KeyW') { if (playerA.isSolving) playerA.selectMathOption(0, -1); else playerA.rotate(); }
+            if (code === 'KeyA') {if (playerA.isSolving) playerA.selectMathOption(-1, 0); else playerA.keyboardLeft = true;}
+            if (code === 'KeyD') {if (playerA.isSolving) playerA.selectMathOption(1, 0); else playerA.keyboardRight = true;}
+            if (code === 'KeyS') {if (playerA.isSolving) playerA.selectMathOption(0, 1); else playerA.keyboardDown = true;}
+            if (code === 'KeyW') {if (playerA.isSolving) playerA.selectMathOption(0, -1); else playerA.rotate();}
             if (code === 'KeyQ' && playerA.isSolving) playerA.confirmAnswer();
 
-            if (code === 'ArrowLeft') { if (playerB.isSolving) playerB.selectMathOption(-1, 0); else playerB.keyboardLeft = true; }
-            if (code === 'ArrowRight') { if (playerB.isSolving) playerB.selectMathOption(1, 0); else playerB.keyboardRight = true; }
-            if (code === 'ArrowDown') { if (playerB.isSolving) playerB.selectMathOption(0, 1); else playerB.keyboardDown = true; }
-            if (code === 'ArrowUp') { if (playerB.isSolving) playerB.selectMathOption(0, -1); else playerB.rotate(); }
+            if (code === 'ArrowLeft') {if (playerB.isSolving) playerB.selectMathOption(-1, 0); else playerB.keyboardLeft = true;}
+            if (code === 'ArrowRight') {if (playerB.isSolving) playerB.selectMathOption(1, 0); else playerB.keyboardRight = true;}
+            if (code === 'ArrowDown') {if (playerB.isSolving) playerB.selectMathOption(0, 1); else playerB.keyboardDown = true;}
+            if (code === 'ArrowUp') {if (playerB.isSolving) playerB.selectMathOption(0, -1); else playerB.rotate();}
             if (code === 'Enter' && playerB.isSolving) playerB.confirmAnswer();
         });
 
@@ -771,7 +922,7 @@
                     p.gamepadLeft = left; p.gamepadRight = right; p.gamepadDown = down && !p.waitReleaseDown;
                     if (b1 && !p.lastGamepadState.btn1) p.rotate();
                 }
-                p.lastGamepadState = { left, right, up, down, btn0: b0, btn1: b1 };
+                p.lastGamepadState = {left, right, up, down, btn0: b0, btn1: b1};
             });
         }
 
@@ -781,7 +932,7 @@
             [playerA, playerB].forEach(p => {
                 p.updateMovement(dt); if (!p.isSolving && !isGameOver && !isPaused) {
                     p.dropCounter += dt; const isSD = p.keyboardDown || p.gamepadDown || p.touchDown;
-                    if (p.dropCounter > (isSD ? 50 : p.dropInterval)) { p.drop(); p.dropCounter = 0; }
+                    if (p.dropCounter > (isSD ? 50 : p.dropInterval)) {p.drop(); p.dropCounter = 0;}
                 }
                 p.draw();
             });
@@ -806,10 +957,11 @@
             isPaused = false; isGameOver = false; document.getElementById('help-overlay').style.display = 'none';
             document.getElementById('main-start-btn').style.display = 'none'; document.getElementById('restart-btn').style.display = 'block';
             document.getElementById('touch-a').style.display = 'grid'; document.getElementById('touch-b').style.display = 'grid';
-            if (audioEnabled) { currentBgmIndex = 0; playNextBgm(); }
+            if (audioEnabled) {currentBgmIndex = 0; playNextBgm();}
         }
 
         update(); document.getElementById('help-overlay').style.display = 'flex';
     </script>
 </body>
+
 </html>

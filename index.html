@@ -202,7 +202,8 @@
             touch-action: none;
         }
 
-        .t-btn:active {
+        .t-btn:active,
+        .t-btn.active {
             background: var(--text-color);
             transform: scale(0.95);
         }
@@ -243,6 +244,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 320px;
+            max-width: 95%;
             background: rgba(10, 30, 60, 0.98);
             border: 4px solid var(--text-color);
             border-radius: 15px;
@@ -251,6 +253,25 @@
             display: none;
             z-index: 500;
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+        }
+
+        @media (max-width: 600px) {
+            .math-overlay {
+                width: 180px;
+                padding: 12px 6px;
+            }
+            .math-equation {
+                font-size: 18px;
+                padding: 10px 6px;
+                margin-bottom: 12px;
+            }
+            .math-options {
+                gap: 8px;
+            }
+            .option-btn {
+                padding: 10px 4px;
+                font-size: 16px;
+            }
         }
 
         .math-equation {
@@ -771,8 +792,8 @@
                 </tbody>
             </table>
             <p style="text-align: center; color: #ffcc00; font-weight: bold;">请点击右上角「开始战斗」启动游戏</p>
+            <p style="text-align: center; color: #888; font-size: 12px; margin-top: 15px;">Credits: Forked from [一元一次俄羅斯(東興ㄚ杰製)] by [東興ㄚ杰].</p>
         </div>
-        <p style="text-align: center; color: #888; font-size: 12px; margin-top: 20px;">Credits: Forked from [一元一次俄羅斯(東興ㄚ杰製)] by [東興ㄚ杰].</p>
     </div>
 
     <script>
@@ -1039,6 +1060,11 @@
         function touchInput(e, pID, action, isPressed) {
             if (e) e.preventDefault();
             const p = (pID === 'A') ? playerA : playerB;
+            const btnEl = e?.target;
+            if (btnEl && btnEl.classList.contains('t-btn')) {
+                if (isPressed) btnEl.classList.add('active');
+                else btnEl.classList.remove('active');
+            }
             if (action === 'left') {if (p.isSolving && isPressed) p.selectMathOption(-1, 0); else p.touchLeft = isPressed;}
             if (action === 'right') {if (p.isSolving && isPressed) p.selectMathOption(1, 0); else p.touchRight = isPressed;}
             if (action === 'down') p.touchDown = isPressed;
@@ -1049,26 +1075,40 @@
             if (action === 'down' && isPressed && p.isSolving) p.selectMathOption(0, 1);
         }
 
+        function highlightButton(pID, action, isActive) {
+            const touchId = pID === 'A' ? 'touch-a' : 'touch-b';
+            const touchContainer = document.getElementById(touchId);
+            const btn = touchContainer.querySelector(`.t-btn.${action}`);
+            if (btn) {
+                if (isActive) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+        }
+
         window.addEventListener('keydown', e => {
             if (isPaused || isGameOver) return;
             const code = e.code;
-            if (code === 'KeyA') {if (playerA.isSolving) playerA.selectMathOption(-1, 0); else playerA.keyboardLeft = true;}
-            if (code === 'KeyD') {if (playerA.isSolving) playerA.selectMathOption(1, 0); else playerA.keyboardRight = true;}
-            if (code === 'KeyS') {if (playerA.isSolving) playerA.selectMathOption(0, 1); else playerA.keyboardDown = true;}
-            if (code === 'KeyW') {if (playerA.isSolving) playerA.selectMathOption(0, -1); else playerA.rotate();}
+            if (code === 'KeyA') {if (playerA.isSolving) playerA.selectMathOption(-1, 0); else {playerA.keyboardLeft = true; highlightButton('A', 'left', true);}}
+            if (code === 'KeyD') {if (playerA.isSolving) playerA.selectMathOption(1, 0); else {playerA.keyboardRight = true; highlightButton('A', 'right', true);}}
+            if (code === 'KeyS') {if (playerA.isSolving) playerA.selectMathOption(0, 1); else {playerA.keyboardDown = true; highlightButton('A', 'down', true);}}
+            if (code === 'KeyW') {if (playerA.isSolving) playerA.selectMathOption(0, -1); else {playerA.rotate(); highlightButton('A', 'up', true); setTimeout(() => highlightButton('A', 'up', false), 100);}}
             if (code === 'KeyQ' && playerA.isSolving) playerA.confirmAnswer();
 
-            if (code === 'ArrowLeft') {if (playerB.isSolving) playerB.selectMathOption(-1, 0); else playerB.keyboardLeft = true;}
-            if (code === 'ArrowRight') {if (playerB.isSolving) playerB.selectMathOption(1, 0); else playerB.keyboardRight = true;}
-            if (code === 'ArrowDown') {if (playerB.isSolving) playerB.selectMathOption(0, 1); else playerB.keyboardDown = true;}
-            if (code === 'ArrowUp') {if (playerB.isSolving) playerB.selectMathOption(0, -1); else playerB.rotate();}
+            if (code === 'ArrowLeft') {if (playerB.isSolving) playerB.selectMathOption(-1, 0); else {playerB.keyboardLeft = true; highlightButton('B', 'left', true);}}
+            if (code === 'ArrowRight') {if (playerB.isSolving) playerB.selectMathOption(1, 0); else {playerB.keyboardRight = true; highlightButton('B', 'right', true);}}
+            if (code === 'ArrowDown') {if (playerB.isSolving) playerB.selectMathOption(0, 1); else {playerB.keyboardDown = true; highlightButton('B', 'down', true);}}
+            if (code === 'ArrowUp') {if (playerB.isSolving) playerB.selectMathOption(0, -1); else {playerB.rotate(); highlightButton('B', 'up', true); setTimeout(() => highlightButton('B', 'up', false), 100);}}
             if (code === 'Enter' && playerB.isSolving) playerB.confirmAnswer();
         });
 
         window.addEventListener('keyup', e => {
             const code = e.code;
-            if (code === 'KeyA') playerA.keyboardLeft = false; if (code === 'KeyD') playerA.keyboardRight = false; if (code === 'KeyS') playerA.keyboardDown = false;
-            if (code === 'ArrowLeft') playerB.keyboardLeft = false; if (code === 'ArrowRight') playerB.keyboardRight = false; if (code === 'ArrowDown') playerB.keyboardDown = false;
+            if (code === 'KeyA') {playerA.keyboardLeft = false; highlightButton('A', 'left', false);}
+            if (code === 'KeyD') {playerA.keyboardRight = false; highlightButton('A', 'right', false);}
+            if (code === 'KeyS') {playerA.keyboardDown = false; highlightButton('A', 'down', false);}
+            if (code === 'ArrowLeft') {playerB.keyboardLeft = false; highlightButton('B', 'left', false);}
+            if (code === 'ArrowRight') {playerB.keyboardRight = false; highlightButton('B', 'right', false);}
+            if (code === 'ArrowDown') {playerB.keyboardDown = false; highlightButton('B', 'down', false);}
         });
 
         function pollGamepads() {

@@ -34,10 +34,13 @@ python -m http.server 5000 --bind 0.0.0.0
 
 ## Recent Changes (2026-01-02)
 - Converted all traditional Chinese to simplified Chinese
-- Added Credits attribution line below the rules table
+- Added Credits attribution line below the rules table (inside help-content, below red border)
 - Implemented answer review system with:
   - Semi-transparent game over popup showing loser's board state
   - Wrong answer tracking during gameplay
   - Review screen displaying all incorrect answers
   - Practice mode: select answers, submit to reveal correct ones
   - Retry practice or restart game options
+- Game over display: dual overlays on each player's board (winner/loser messages)
+- Responsive math overlay: shrinks on small screens (<600px) to avoid blocking opponent's board
+- Button visual feedback: touch buttons now light up red for touch and keyboard controls (not just mouse)

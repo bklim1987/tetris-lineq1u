@@ -72,40 +72,57 @@ python -m http.server 5000 --bind 0.0.0.0
 - Playlist is shuffled at game start (random first song)
 - Songs continue in sequence, looping through the playlist
 
-### Smart Distractor System (2026-01-02)
-Math problem options are now designed to capture common student misconceptions:
+### Smart Distractor System (Updated 2026-01-02)
+Math problem options are designed to capture common student misconceptions, with randomized selection from expanded pools to avoid predictable patterns.
 
-**Type 1: x ± a = b**
-- Correct: x = b ∓ a
-- Distractors: b-a (forgot sign change), -x (sign error), a-b (wrong order)
+**Type 1: x ± a = b** (Pool of 8, randomly select 3)
+- b + a (wrong direction)
+- a - b (reversed order)
+- b (forgot to subtract)
+- -b (sign confusion)
+- -(b - a) (double sign error)
+- -x, x+1, x-1 (fallbacks)
 
-**Type 2: ax ± b = c**
-- Correct: x = (c ∓ b) / a
-- Distractors: (c+b)/a (forgot sign change), c-b (forgot divide), -x (sign error)
+**Type 2: ax ± b = c** (Pool of 9, randomly select 3)
+- (c + b) / a (forgot sign change)
+- c - b (forgot to divide)
+- c / a (forgot constant)
+- c (just copied right side)
+- (c - b) / (-a) (division sign error)
+- b - c (reversed subtraction)
+- -x, x+1, x-1 (fallbacks)
 
-**Type 3: a(x ± b) = c**
-- Correct: x = c/a ∓ b
-- Distractors: c/a (forgot subtract b), c/a+b (wrong direction), -x (sign error)
+**Type 3: a(x ± b) = c** (Pool of 8, randomly select 3)
+- c / a (forgot inner constant)
+- c / a + b (wrong direction)
+- c - b (wrong operation order)
+- (c - b) / a (distributed incorrectly)
+- c / a + 2b (double constant error)
+- -x, x+1, x-1 (fallbacks)
 
 **Type 4: Complex equations**
-- Uses -x, x+1, x-1 as fallback distractors for very complex equations
+- Pool of 5 fallback distractors: -x, x±1, x±2
 
-This approach helps teachers identify specific misconceptions when students choose wrong answers.
+This randomized approach prevents the predictable "answer or its negative" pattern while still capturing meaningful misconceptions.
 
-### Practice Mode (2026-01-02)
-A standalone practice mode for learning equation solving:
+### Practice Mode (Updated 2026-01-02)
+A two-player practice mode for learning equation solving, similar to the review system layout.
 
 **Features:**
 - "练习" button next to "开始战斗" on the main screen
-- Generates 3 questions (one each from Type 1, 2, 3)
-- Uses the same visual style as the review system
+- Split into left/right columns (Player A on left, Player B on right)
+- Each player gets 3 independent questions (one each from Type 1, 2, 3)
+- Players' questions can be different
+- Each player has their own submit button
 - After submission:
   - Correct answers show cyan checkmark (✓)
   - Wrong answers show red X (✗)
   - Wrong answers reveal detailed step-by-step solution
-- Buttons: "再次练习" (practice again) or "返回主页" (return to home)
+- Buttons per player: "再次练习" (practice again) or "返回主页" (return to home)
+- Return to home requires BOTH players to click "返回主页"
+- Shows "等待对方..." when one player has confirmed
 
-**Solution Step Format (Updated):**
+**Solution Step Format:**
 Solutions show the algebraic principle of "performing the same operation on both sides":
 
 - Type 1 (x ± a = b):

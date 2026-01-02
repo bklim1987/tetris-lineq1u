@@ -987,11 +987,27 @@
     <div id="practice-overlay" class="review-overlay">
         <div class="review-content">
             <h2 class="review-title">练习模式</h2>
-            <div class="practice-questions" id="practice-questions"></div>
-            <div class="review-global-footer">
-                <button class="review-btn submit" id="practice-submit" onclick="submitPractice()">提交答案</button>
-                <button class="review-btn retry" id="practice-retry" onclick="openPracticeMode()" style="display:none;">再次练习</button>
-                <button class="review-btn restart" id="practice-home" onclick="closePracticeMode()" style="display:none;">返回主页</button>
+            <div class="review-columns">
+                <div class="review-column" id="practice-col-a">
+                    <div class="review-column-header">玩家 A</div>
+                    <div class="review-column-questions" id="practice-questions-a"></div>
+                    <div class="review-column-footer">
+                        <div class="review-status" id="practice-status-a"></div>
+                        <button class="review-btn submit" id="practice-submit-a" onclick="submitPracticePlayer('A')">提交答案</button>
+                        <button class="review-btn retry" id="practice-retry-a" onclick="retryPracticePlayer('A')" style="display:none;">再次练习</button>
+                        <button class="review-btn restart" id="practice-home-a" onclick="confirmPracticeHome('A')" style="display:none;">返回主页</button>
+                    </div>
+                </div>
+                <div class="review-column" id="practice-col-b">
+                    <div class="review-column-header">玩家 B</div>
+                    <div class="review-column-questions" id="practice-questions-b"></div>
+                    <div class="review-column-footer">
+                        <div class="review-status" id="practice-status-b"></div>
+                        <button class="review-btn submit" id="practice-submit-b" onclick="submitPracticePlayer('B')">提交答案</button>
+                        <button class="review-btn retry" id="practice-retry-b" onclick="retryPracticePlayer('B')" style="display:none;">再次练习</button>
+                        <button class="review-btn restart" id="practice-home-b" onclick="confirmPracticeHome('B')" style="display:none;">返回主页</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1143,39 +1159,72 @@
             }
 
             static getDistractorsType1(x, a, b) {
-                const candidates = [
+                const pool = [
                     b + a,
-                    -x,
-                    a - b
-                ];
-                return candidates;
-            }
-
-            static getDistractorsType2(x, a, b, c) {
-                const candidates = [
-                    (c + b) / a,
-                    c - b,
-                    -x
-                ];
-                return candidates;
-            }
-
-            static getDistractorsType3(x, a, b, c) {
-                const candidates = [
-                    c / a,
-                    c / a + b,
-                    -x
-                ];
-                return candidates;
-            }
-
-            static getDistractorsType4(x, a, b, c, d, f) {
-                const candidates = [
+                    a - b,
+                    b,
+                    -b,
+                    -(b - a),
                     -x,
                     x + 1,
                     x - 1
                 ];
-                return candidates;
+                return this.sampleDistractors(pool, x, 3);
+            }
+
+            static getDistractorsType2(x, a, b, c) {
+                const pool = [
+                    (c + b) / a,
+                    c - b,
+                    c / a,
+                    c,
+                    (c - b) / (-a),
+                    b - c,
+                    -x,
+                    x + 1,
+                    x - 1
+                ];
+                return this.sampleDistractors(pool, x, 3);
+            }
+
+            static getDistractorsType3(x, a, b, c) {
+                const pool = [
+                    c / a,
+                    c / a + b,
+                    c - b,
+                    (c - b) / a,
+                    c / a - b + 2 * b,
+                    -x,
+                    x + 1,
+                    x - 1
+                ];
+                return this.sampleDistractors(pool, x, 3);
+            }
+
+            static getDistractorsType4(x, a, b, c, d, f) {
+                const pool = [
+                    -x,
+                    x + 1,
+                    x - 1,
+                    x + 2,
+                    x - 2
+                ];
+                return this.sampleDistractors(pool, x, 3);
+            }
+
+            static sampleDistractors(pool, correctAnswer, count) {
+                let valid = pool
+                    .filter(d => Number.isFinite(d) && Number.isInteger(d) && d !== correctAnswer)
+                    .filter((d, i, arr) => arr.indexOf(d) === i);
+                this.shuffle(valid);
+                let result = valid.slice(0, count);
+                let fallback = 1;
+                while (result.length < count) {
+                    const candidate = correctAnswer + fallback;
+                    if (!result.includes(candidate) && candidate !== correctAnswer) result.push(candidate);
+                    fallback = fallback > 0 ? -fallback : -fallback + 1;
+                }
+                return result;
             }
 
             static buildOptions(correctAnswer, distractors) {
@@ -1781,25 +1830,40 @@
         }
 
         let practiceState = {
-            questions: [],
-            selectedAnswers: {},
-            submitted: false
+            A: { questions: [], selectedAnswers: {}, submitted: false, confirmedHome: false },
+            B: { questions: [], selectedAnswers: {}, submitted: false, confirmedHome: false }
         };
 
         function openPracticeMode() {
             document.getElementById('help-overlay').style.display = 'none';
             practiceState = {
-                questions: [
-                    MathEngine.generatePractice(1),
-                    MathEngine.generatePractice(2),
-                    MathEngine.generatePractice(3)
-                ],
-                selectedAnswers: {},
-                submitted: false
+                A: {
+                    questions: [
+                        MathEngine.generatePractice(1),
+                        MathEngine.generatePractice(2),
+                        MathEngine.generatePractice(3)
+                    ],
+                    selectedAnswers: {},
+                    submitted: false,
+                    confirmedHome: false
+                },
+                B: {
+                    questions: [
+                        MathEngine.generatePractice(1),
+                        MathEngine.generatePractice(2),
+                        MathEngine.generatePractice(3)
+                    ],
+                    selectedAnswers: {},
+                    submitted: false,
+                    confirmedHome: false
+                }
             };
-            document.getElementById('practice-submit').style.display = 'inline-block';
-            document.getElementById('practice-retry').style.display = 'none';
-            document.getElementById('practice-home').style.display = 'none';
+            ['A', 'B'].forEach(pid => {
+                document.getElementById('practice-submit-' + pid.toLowerCase()).style.display = 'inline-block';
+                document.getElementById('practice-retry-' + pid.toLowerCase()).style.display = 'none';
+                document.getElementById('practice-home-' + pid.toLowerCase()).style.display = 'none';
+                document.getElementById('practice-status-' + pid.toLowerCase()).textContent = '';
+            });
             document.getElementById('practice-overlay').style.display = 'flex';
             renderPracticeQuestions();
         }
@@ -1810,82 +1874,133 @@
         }
 
         function renderPracticeQuestions() {
-            const container = document.getElementById('practice-questions');
             const typeNames = ['类型一：x ± a = b', '类型二：ax ± b = c', '类型三：a(x ± b) = c'];
             
-            container.innerHTML = practiceState.questions.map((q, qIdx) => {
-                let resultMark = '';
-                if (practiceState.submitted) {
-                    const selectedIdx = practiceState.selectedAnswers[qIdx];
-                    const isCorrect = selectedIdx !== undefined && q.options[selectedIdx] === q.answer;
-                    resultMark = isCorrect 
-                        ? '<span class="practice-result-mark correct">✓</span>'
-                        : '<span class="practice-result-mark wrong">✗</span>';
-                }
+            ['A', 'B'].forEach(pid => {
+                const state = practiceState[pid];
+                const container = document.getElementById('practice-questions-' + pid.toLowerCase());
                 
-                return '<div class="practice-question">' +
-                    '<div class="practice-question-header">' +
-                        '<span>' + typeNames[qIdx] + '</span>' +
-                        resultMark +
-                    '</div>' +
-                    '<div class="practice-equation">' + q.equation + '</div>' +
-                    '<div class="practice-options">' +
-                        q.options.map((opt, optIdx) => {
-                            let className = 'practice-option';
-                            const isSelected = practiceState.selectedAnswers[qIdx] === optIdx;
-                            const isCorrect = opt === q.answer;
-                            
-                            if (practiceState.submitted) {
-                                if (isCorrect) {
-                                    className += ' correct-revealed';
-                                } else if (isSelected && !isCorrect) {
-                                    className += ' wrong-revealed';
+                container.innerHTML = state.questions.map((q, qIdx) => {
+                    let resultMark = '';
+                    if (state.submitted) {
+                        const selectedIdx = state.selectedAnswers[qIdx];
+                        const isCorrect = selectedIdx !== undefined && q.options[selectedIdx] === q.answer;
+                        resultMark = isCorrect 
+                            ? '<span class="practice-result-mark correct">✓</span>'
+                            : '<span class="practice-result-mark wrong">✗</span>';
+                    }
+                    
+                    return '<div class="practice-question">' +
+                        '<div class="practice-question-header">' +
+                            '<span>' + typeNames[qIdx] + '</span>' +
+                            resultMark +
+                        '</div>' +
+                        '<div class="practice-equation">' + q.equation + '</div>' +
+                        '<div class="practice-options">' +
+                            q.options.map((opt, optIdx) => {
+                                let className = 'practice-option';
+                                const isSelected = state.selectedAnswers[qIdx] === optIdx;
+                                const isCorrect = opt === q.answer;
+                                
+                                if (state.submitted) {
+                                    if (isCorrect) {
+                                        className += ' correct-revealed';
+                                    } else if (isSelected && !isCorrect) {
+                                        className += ' wrong-revealed';
+                                    }
+                                } else {
+                                    if (isSelected) {
+                                        className += ' selected';
+                                    }
                                 }
-                            } else {
-                                if (isSelected) {
-                                    className += ' selected';
-                                }
-                            }
-                            
-                            const clickable = !practiceState.submitted;
-                            return '<div class="' + className + '"' + 
-                                (clickable ? ' onclick="selectPracticeOption(' + qIdx + ', ' + optIdx + ')"' : '') + 
-                                '>' + opt + '</div>';
-                        }).join('') +
-                    '</div>' +
-                    '<div class="practice-solution" id="solution-' + qIdx + '">' +
-                        '<div class="practice-solution-title">解题思路</div>' +
-                        '<div id="solution-steps-' + qIdx + '"></div>' +
-                    '</div>' +
-                '</div>';
-            }).join('');
+                                
+                                const clickable = !state.submitted;
+                                return '<div class="' + className + '"' + 
+                                    (clickable ? ' onclick="selectPracticeOption(\'' + pid + '\', ' + qIdx + ', ' + optIdx + ')"' : '') + 
+                                    '>' + opt + '</div>';
+                            }).join('') +
+                        '</div>' +
+                        '<div class="practice-solution" id="solution-' + pid + '-' + qIdx + '">' +
+                            '<div class="practice-solution-title">解题思路</div>' +
+                            '<div id="solution-steps-' + pid + '-' + qIdx + '"></div>' +
+                        '</div>' +
+                    '</div>';
+                }).join('');
+            });
         }
 
-        function selectPracticeOption(qIdx, optIdx) {
-            if (practiceState.submitted) return;
-            practiceState.selectedAnswers[qIdx] = optIdx;
+        function selectPracticeOption(pid, qIdx, optIdx) {
+            const state = practiceState[pid];
+            if (state.submitted) return;
+            state.selectedAnswers[qIdx] = optIdx;
             renderPracticeQuestions();
         }
 
-        function submitPractice() {
-            practiceState.submitted = true;
+        function submitPracticePlayer(pid) {
+            const state = practiceState[pid];
+            state.submitted = true;
             renderPracticeQuestions();
             
-            practiceState.questions.forEach((q, qIdx) => {
-                const selectedIdx = practiceState.selectedAnswers[qIdx];
+            state.questions.forEach((q, qIdx) => {
+                const selectedIdx = state.selectedAnswers[qIdx];
                 const isCorrect = selectedIdx !== undefined && q.options[selectedIdx] === q.answer;
                 
                 if (!isCorrect) {
-                    const solutionDiv = document.getElementById('solution-' + qIdx);
-                    const stepsDiv = document.getElementById('solution-steps-' + qIdx);
+                    const solutionDiv = document.getElementById('solution-' + pid + '-' + qIdx);
+                    const stepsDiv = document.getElementById('solution-steps-' + pid + '-' + qIdx);
                     solutionDiv.style.display = 'block';
                     stepsDiv.innerHTML = q.solution;
                 }
             });
             
-            document.getElementById('practice-submit').style.display = 'none';
-            document.getElementById('practice-retry').style.display = 'inline-block';
-            document.getElementById('practice-home').style.display = 'inline-block';
+            const pidLower = pid.toLowerCase();
+            document.getElementById('practice-submit-' + pidLower).style.display = 'none';
+            document.getElementById('practice-retry-' + pidLower).style.display = 'inline-block';
+            document.getElementById('practice-home-' + pidLower).style.display = 'inline-block';
+        }
+
+        function retryPracticePlayer(pid) {
+            const state = practiceState[pid];
+            state.questions = [
+                MathEngine.generatePractice(1),
+                MathEngine.generatePractice(2),
+                MathEngine.generatePractice(3)
+            ];
+            state.selectedAnswers = {};
+            state.submitted = false;
+            state.confirmedHome = false;
+            
+            const pidLower = pid.toLowerCase();
+            document.getElementById('practice-submit-' + pidLower).style.display = 'inline-block';
+            document.getElementById('practice-retry-' + pidLower).style.display = 'none';
+            document.getElementById('practice-home-' + pidLower).style.display = 'none';
+            document.getElementById('practice-status-' + pidLower).textContent = '';
+            
+            const otherPid = pid === 'A' ? 'B' : 'A';
+            const otherState = practiceState[otherPid];
+            if (otherState.confirmedHome) {
+                otherState.confirmedHome = false;
+                const otherPidLower = otherPid.toLowerCase();
+                document.getElementById('practice-status-' + otherPidLower).textContent = '';
+                if (otherState.submitted) {
+                    document.getElementById('practice-retry-' + otherPidLower).style.display = 'inline-block';
+                    document.getElementById('practice-home-' + otherPidLower).style.display = 'inline-block';
+                }
+            }
+            
+            renderPracticeQuestions();
+        }
+
+        function confirmPracticeHome(pid) {
+            practiceState[pid].confirmedHome = true;
+            const pidLower = pid.toLowerCase();
+            document.getElementById('practice-status-' + pidLower).textContent = '等待对方...';
+            document.getElementById('practice-home-' + pidLower).style.display = 'none';
+            document.getElementById('practice-retry-' + pidLower).style.display = 'none';
+            
+            if (practiceState.A.confirmedHome && practiceState.B.confirmedHome) {
+                closePracticeMode();
+            }
         }
 
         function startGameSession() {

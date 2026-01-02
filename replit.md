@@ -75,9 +75,10 @@ python -m http.server 5000 --bind 0.0.0.0
 ### Smart Distractor System (Updated 2026-01-02)
 Math problem options are designed to capture common student misconceptions, with randomized selection from expanded pools to avoid predictable patterns.
 
-**Type 1: x ± a = b** (Pool of 8, randomly select 3)
+**Type 1: x ± a = b** (Pool of 9, randomly select 3)
 - b + a (wrong direction)
 - a - b (reversed order)
+- -a - b (all signs wrong)
 - b (forgot to subtract)
 - -b (sign confusion)
 - -(b - a) (double sign error)

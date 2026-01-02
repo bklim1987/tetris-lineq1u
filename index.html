@@ -1342,10 +1342,11 @@
             
             document.getElementById('global-over-buttons').style.display = 'flex';
             
-            // Play victory music
+            // Play victory music for 5 seconds
             if (audioEnabled) {
                 currentBgmIndex = Math.floor(Math.random() * BGM_FILES.length);
                 playNextBgm();
+                setTimeout(() => { bgmPlayer.pause(); }, 5000);
             }
             
             // Add celebration animation to winner's board
@@ -1384,6 +1385,8 @@
         };
 
         function openReview() {
+            bgmPlayer.pause();
+            
             reviewState = {
                 A: { questions: [...playerA.wrongAnswers], selectedAnswers: {}, attempted: false, revealed: false, passed: false },
                 B: { questions: [...playerB.wrongAnswers], selectedAnswers: {}, attempted: false, revealed: false, passed: false }
@@ -1510,7 +1513,7 @@
             isPaused = false; isGameOver = false; document.getElementById('help-overlay').style.display = 'none';
             document.getElementById('main-start-btn').style.display = 'none'; document.getElementById('restart-btn').style.display = 'block';
             document.getElementById('touch-a').style.display = 'grid'; document.getElementById('touch-b').style.display = 'grid';
-            if (audioEnabled) {currentBgmIndex = 0; playNextBgm();}
+            if (audioEnabled) {currentBgmIndex = Math.floor(Math.random() * BGM_FILES.length); playNextBgm();}
         }
 
         update(); document.getElementById('help-overlay').style.display = 'flex';

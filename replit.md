@@ -64,5 +64,10 @@ python -m http.server 5000 --bind 0.0.0.0
 
 ### Game Over Effects
 - Music switches to a new random track when game ends
+- Music auto-stops after 5 seconds OR when "答题复盘" is clicked
 - Winner's board displays celebration confetti animation
 - Winner overlay has pulsing green glow effect
+
+### Music Playlist
+- Playlist is shuffled at game start (random first song)
+- Songs continue in sequence, looping through the playlist

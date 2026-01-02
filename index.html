@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hans">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>一元一次俄羅斯(東興ㄚ杰)</title>
+    <title>一元一次俄罗斯(东兴ㄚ杰)</title>
     <style>
         :root {
             --bg-color: #1a1a2e;
@@ -26,7 +26,7 @@
             touch-action: manipulation;
         }
 
-        /* 頂部控制列 */
+        /* 顶部控制栏 */
         #top-bar {
             width: 100%;
             background: #0f3460;
@@ -93,7 +93,7 @@
         }
         .btn-audio { background: #533483; min-width: 70px; }
 
-        /* 遊戲主容器 */
+        /* 游戏主容器 */
         #game-container {
             display: flex;
             width: 100%;
@@ -157,7 +157,7 @@
         .info-label { font-size: 10px; color: #ccc; }
         .info-value { font-size: 14px; font-weight: bold; color: #00d4ff; }
 
-        /* 集中式控制按鈕區 */
+        /* 集中式控制按钮区 */
         .touch-controls {
             display: none; 
             grid-template-columns: repeat(2, 75px); 
@@ -192,7 +192,7 @@
         .t-btn.right { grid-column: 2; grid-row: 2; border-left-width: 1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
         .t-btn.down { grid-column: span 2; grid-row: 3; }
 
-        /* 方程式解題區 - 擴大小視窗並固定單行呈現 */
+        /* 方程式解题区 - 扩大小窗口并固定单行呈现 */
         .math-overlay {
             position: absolute;
             top: 50%;
@@ -248,7 +248,7 @@
             box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
         }
 
-        /* 說明視窗優化 */
+        /* 说明窗口优化 */
         #help-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -362,9 +362,9 @@
 
     <div id="top-bar">
         <div class="audio-controls">
-            <button class="btn btn-fullscreen" onclick="toggleFullScreen()">⛶ 全螢幕</button>
-            <button class="btn btn-audio" id="bgm-toggle" onclick="toggleMusic()">音樂: 關</button>
-            <button class="btn btn-audio" id="sfx-toggle" onclick="toggleSFX()">音效: 關</button>
+            <button class="btn btn-fullscreen" onclick="toggleFullScreen()">⛶ 全屏</button>
+            <button class="btn btn-audio" id="bgm-toggle" onclick="toggleMusic()">音乐: 关</button>
+            <button class="btn btn-audio" id="sfx-toggle" onclick="toggleSFX()">音效: 关</button>
             <div class="volume-control">
                 <span>🔊</span>
                 <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.1" value="0.5" oninput="updateVolume(this.value)">
@@ -372,13 +372,13 @@
         </div>
         
         <div class="title-group">
-            <!-- 標題修改為指定名稱 -->
-            <div style="font-weight: bold; font-size: 18px;">🕹️ 一元一次俄羅斯(東興ㄚ杰製)</div>
+            <!-- 标题修改为指定名称 -->
+            <div style="font-weight: bold; font-size: 18px;">🕹️ 一元一次俄罗斯(东兴ㄚ杰制)</div>
         </div>
 
         <div>
-            <button class="btn btn-start" id="main-start-btn" onclick="startGameSession()">開始戰鬥</button>
-            <button class="btn btn-restart" id="restart-btn" onclick="location.reload()">重新開始</button>
+            <button class="btn btn-start" id="main-start-btn" onclick="startGameSession()">开始战斗</button>
+            <button class="btn btn-restart" id="restart-btn" onclick="location.reload()">重新开始</button>
         </div>
     </div>
 
@@ -386,7 +386,7 @@
         <!-- 玩家 A (左) -->
         <div id="player-a" class="player-section">
             <div class="touch-controls" id="touch-a">
-                <div class="t-btn up" onmousedown="touchInput(event, 'A', 'up', true)" onmouseup="touchInput(event, 'A', 'up', false)" ontouchstart="touchInput(event, 'A', 'up', true)" ontouchend="touchInput(event, 'A', 'up', false)">旋轉</div>
+                <div class="t-btn up" onmousedown="touchInput(event, 'A', 'up', true)" onmouseup="touchInput(event, 'A', 'up', false)" ontouchstart="touchInput(event, 'A', 'up', true)" ontouchend="touchInput(event, 'A', 'up', false)">旋转</div>
                 <div class="t-btn left" onmousedown="touchInput(event, 'A', 'left', true)" onmouseup="touchInput(event, 'A', 'left', false)" ontouchstart="touchInput(event, 'A', 'left', true)" ontouchend="touchInput(event, 'A', 'left', false)">←</div>
                 <div class="t-btn right" onmousedown="touchInput(event, 'A', 'right', true)" onmouseup="touchInput(event, 'A', 'right', false)" ontouchstart="touchInput(event, 'A', 'right', true)" ontouchend="touchInput(event, 'A', 'right', false)">→</div>
                 <div class="t-btn down" onmousedown="touchInput(event, 'A', 'down', true)" onmouseup="touchInput(event, 'A', 'down', false)" ontouchstart="touchInput(event, 'A', 'down', true)" ontouchend="touchInput(event, 'A', 'down', false)">↓</div>
@@ -414,7 +414,7 @@
         <!-- 玩家 B (右) -->
         <div id="player-b" class="player-section">
             <div class="touch-controls" id="touch-b">
-                <div class="t-btn up" onmousedown="touchInput(event, 'B', 'up', true)" onmouseup="touchInput(event, 'B', 'up', false)" ontouchstart="touchInput(event, 'B', 'up', true)" ontouchend="touchInput(event, 'B', 'up', false)">旋轉</div>
+                <div class="t-btn up" onmousedown="touchInput(event, 'B', 'up', true)" onmouseup="touchInput(event, 'B', 'up', false)" ontouchstart="touchInput(event, 'B', 'up', true)" ontouchend="touchInput(event, 'B', 'up', false)">旋转</div>
                 <div class="t-btn left" onmousedown="touchInput(event, 'B', 'left', true)" onmouseup="touchInput(event, 'B', 'left', false)" ontouchstart="touchInput(event, 'B', 'left', true)" ontouchend="touchInput(event, 'B', 'left', false)">←</div>
                 <div class="t-btn right" onmousedown="touchInput(event, 'B', 'right', true)" onmouseup="touchInput(event, 'B', 'right', false)" ontouchstart="touchInput(event, 'B', 'right', true)" ontouchend="touchInput(event, 'B', 'right', false)">→</div>
                 <div class="t-btn down" onmousedown="touchInput(event, 'B', 'down', true)" onmouseup="touchInput(event, 'B', 'down', false)" ontouchstart="touchInput(event, 'B', 'down', true)" ontouchend="touchInput(event, 'B', 'down', false)">↓</div>
@@ -440,39 +440,39 @@
         </div>
     </div>
 
-    <!-- 結算畫面 (僅在遊戲結束時顯示) -->
+    <!-- 结算画面 (仅在游戏结束时显示) -->
     <div id="global-over" class="global-game-over">
-        <div id="win-msg" class="win-celebration">🏆 恭喜 玩家 獲得最終勝利！ 🏆</div>
-        <button class="btn btn-help" style="margin-top:40px; padding: 15px 40px; font-size: 20px; color: white; position: relative; z-index: 2120;" onclick="location.reload()" ontouchstart="location.reload()">重新對決</button>
+        <div id="win-msg" class="win-celebration">🏆 恭喜 玩家 获得最终胜利！ 🏆</div>
+        <button class="btn btn-help" style="margin-top:40px; padding: 15px 40px; font-size: 20px; color: white; position: relative; z-index: 2120;" onclick="location.reload()" ontouchstart="location.reload()">重新对决</button>
     </div>
 
     <div id="help-overlay">
         <div class="help-content">
-            <!-- 標題修改為指定名稱 -->
-            <h2 style="text-align: center; color: var(--text-color);">一元一次俄羅斯(東興ㄚ杰製)</h2>
+            <!-- 标题修改为指定名称 -->
+            <h2 style="text-align: center; color: var(--text-color);">一元一次俄罗斯(东兴ㄚ杰制)</h2>
             
             <table class="help-table">
                 <thead>
-                    <tr><th>功能</th><th>鍵盤玩家 A/B</th><th>PS/2 搖桿</th><th>平板觸控</th></tr>
+                    <tr><th>功能</th><th>键盘玩家 A/B</th><th>PS/2 摇杆</th><th>平板触控</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>左右移動</td><td>A,D / ←,→</td><td>十字鍵 左右</td><td>中間並排按鈕</td></tr>
-                    <tr><td>加速下落</td><td>S / ↓</td><td>左搖桿 下</td><td>最下方按鈕</td></tr>
-                    <tr><td>旋轉方塊</td><td>W / ↑</td><td>按鈕 2 (B)</td><td>最上方按鈕</td></tr>
-                    <tr><td>答題選擇</td><td>WASD / 方向鍵</td><td>十字鍵</td><td><strong>直接點選選項</strong></td></tr>
-                    <tr><td>答題確認</td><td>Q / Enter</td><td>按鈕 1 (A)</td><td>無需按鈕</td></tr>
-                    <tr><th colspan="4" style="text-align:center; background:#16213e; color:#00ffcc;">遊戲規則與重點</th></tr>
+                    <tr><td>左右移动</td><td>A,D / ←,→</td><td>十字键 左右</td><td>中间并排按钮</td></tr>
+                    <tr><td>加速下落</td><td>S / ↓</td><td>左摇杆 下</td><td>最下方按钮</td></tr>
+                    <tr><td>旋转方块</td><td>W / ↑</td><td>按钮 2 (B)</td><td>最上方按钮</td></tr>
+                    <tr><td>答题选择</td><td>WASD / 方向键</td><td>十字键</td><td><strong>直接点选选项</strong></td></tr>
+                    <tr><td>答题确认</td><td>Q / Enter</td><td>按钮 1 (A)</td><td>无需按钮</td></tr>
+                    <tr><th colspan="4" style="text-align:center; background:#16213e; color:#00ffcc;">游戏规则与重点</th></tr>
                     <tr><td colspan="4">
                         <ul>
-                            <li>消除行數即可發動攻擊，對手需答對方程式方可恢復操作。</li>
-                            <li>包含 "B" 字的小格被消除後會產生炸彈，落地立即引爆 5x5 範圍。</li>
-                            <li><strong>敗戰判定：</strong> 1. 新方塊產生時位置被佔據。 2. 被垃圾行推擠導致方塊溢出頂部。</li>
-                            <li>所有題目之係數、常數與答案均保證不為 0。</li>
+                            <li>消除行数即可发动攻击，对手需答对方程式方可恢复操作。</li>
+                            <li>包含 "B" 字的小格被消除后会产生炸弹，落地立即引爆 5x5 范围。</li>
+                            <li><strong>败战判定：</strong> 1. 新方块产生时位置被占据。 2. 被垃圾行推挤导致方块溢出顶部。</li>
+                            <li>所有题目之系数、常数与答案均保证不为 0。</li>
                         </ul>
                     </td></tr>
                 </tbody>
             </table>
-            <p style="text-align: center; color: #ffcc00; font-weight: bold;">請點擊右上角「開始戰鬥」啟動遊戲</p>
+            <p style="text-align: center; color: #ffcc00; font-weight: bold;">请点击右上角「开始战斗」启动游戏</p>
         </div>
     </div>
 
@@ -494,8 +494,8 @@
             const overlay = document.getElementById('flash-overlay'); playStonefall();
             for (let i = 0; i < 3; i++) { overlay.style.opacity = '1'; await new Promise(r => setTimeout(r, 80)); overlay.style.opacity = '0'; await new Promise(r => setTimeout(r, 80)); }
         }
-        function toggleMusic() { audioEnabled = !audioEnabled; document.getElementById('bgm-toggle').innerText = `音樂: ${audioEnabled ? '開' : '關'}`; if (audioEnabled) playNextBgm(); else bgmPlayer.pause(); }
-        function toggleSFX() { sfxEnabled = !sfxEnabled; document.getElementById('sfx-toggle').innerText = `音效: ${sfxEnabled ? '開' : '關'}`; }
+        function toggleMusic() { audioEnabled = !audioEnabled; document.getElementById('bgm-toggle').innerText = `音乐: ${audioEnabled ? '开' : '关'}`; if (audioEnabled) playNextBgm(); else bgmPlayer.pause(); }
+        function toggleSFX() { sfxEnabled = !sfxEnabled; document.getElementById('sfx-toggle').innerText = `音效: ${sfxEnabled ? '开' : '关'}`; }
         function playNextBgm() {
             if (!audioEnabled) return; bgmPlayer.src = BGM_FILES[currentBgmIndex]; bgmPlayer.volume = currentVolume;
             bgmPlayer.play().catch(() => { currentBgmIndex = (currentBgmIndex + 1) % BGM_FILES.length; playNextBgm(); });
@@ -790,7 +790,7 @@
 
         function endGame(loserId) {
             if (isGameOver) return; isGameOver = true; const winner = loserId === 'A' ? 'B' : 'A';
-            document.getElementById('win-msg').innerText = `🏆 恭喜 玩家 ${winner} 獲得最終勝利！ 🏆`; document.getElementById('global-over').style.display = 'flex';
+            document.getElementById('win-msg').innerText = `🏆 恭喜 玩家 ${winner} 获得最终胜利！ 🏆`; document.getElementById('global-over').style.display = 'flex';
             const colors = ['#ffc0cb', '#ff69b4', '#ff1493', '#fff', '#ffd700'];
             for (let i = 0; i < 100; i++) {
                 const petal = document.createElement('div'); petal.className = 'petal';

@@ -29,3 +29,15 @@ python -m http.server 5000 --bind 0.0.0.0
 - Multiple background music tracks with volume control
 - Fullscreen mode support
 - Touch controls for mobile devices
+- Answer review system (答题复盘) - review wrong answers after game ends
+- Practice mode for wrong questions with answer reveal
+
+## Recent Changes (2026-01-02)
+- Converted all traditional Chinese to simplified Chinese
+- Added Credits attribution line below the rules table
+- Implemented answer review system with:
+  - Semi-transparent game over popup showing loser's board state
+  - Wrong answer tracking during gameplay
+  - Review screen displaying all incorrect answers
+  - Practice mode: select answers, submit to reveal correct ones
+  - Retry practice or restart game options

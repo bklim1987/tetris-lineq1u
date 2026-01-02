@@ -91,3 +91,17 @@ Math problem options are now designed to capture common student misconceptions:
 - Uses -x, x+1, x-1 as fallback distractors for very complex equations
 
 This approach helps teachers identify specific misconceptions when students choose wrong answers.
+
+### Practice Mode (2026-01-02)
+A standalone practice mode for learning equation solving:
+
+**Features:**
+- "练习" button next to "开始战斗" on the main screen
+- Generates 3 questions (one each from Type 1, 2, 3)
+- Uses the same visual style as the review system
+- After submission:
+  - Correct answers show cyan checkmark (✓)
+  - Wrong answers show red X (✗)
+  - Wrong answers reveal detailed step-by-step solution
+- Solution steps explain the solving process with clear instructions
+- Buttons: "再次练习" (practice again) or "返回主页" (return to home)
